@@ -9,10 +9,8 @@ import {
   RenderLeafProps 
 } from 'slate-react';
 import { withHistory } from 'slate-history';
+import Element from '@/components/ui/Element'
 import HoveringToolbar from '@/components/nav/HoveringToolbar';
-import CodeElement from '@/components/ui/CodeElement';
-import ButtonElement from '@/components/ui/ButtonElement';
-import DefaultElement from '@/components/ui/DefaultElement';
 import Leaf from '@/components/Leaf';
 import { isMarkActive, toggleMark } from '../lib/utils';
 
@@ -33,17 +31,11 @@ const SlateEditor: React.FC = () => {
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
   const [value, setValue] = useState<Descendant[]>(initialValue);
 
-  const renderElement = useCallback((props: RenderElementProps) => {
-    switch (props.element.type) {
-      case 'code':
-        return <CodeElement {...props} />;
-      case 'button':
-        return <ButtonElement {...props} />;
-      default:
-        return <DefaultElement {...props} />;
-    }
-  }, []);
+  // element is the central hub for for handling all the different data
+  // and element types in the editor
+  const renderElement = useCallback((props: RenderElementProps) => <Element {...props} />, []);
 
+  // leaf is used by the hover menu to apply styling
   const renderLeaf = useCallback((props: RenderLeafProps) => {
     return <Leaf {...props} />;
   }, []);

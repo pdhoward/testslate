@@ -6,7 +6,6 @@ import { tomorrow as codeStyle } from 'react-syntax-highlighter/dist/esm/styles/
 
 const CodeElement: React.FC<RenderElementProps> = (props) => {
   const text = props.children ? Node.string(props.element) : '';
-
   return (
     <SyntaxHighlighter language="cobol" style={codeStyle} className="bg-gray-800 text-white rounded p-4">
       {text}
