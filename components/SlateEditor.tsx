@@ -13,6 +13,8 @@ import { withHistory } from 'slate-history';
 import Element from '@/components/ui/Element'
 import HoveringToolbar from '@/components/nav/HoveringToolbar';
 import Toolbar from '@/components/nav/Toolbar';
+import MarkButton from '@/components/ui/MarkButton';
+import BlockButton from '@/components/ui/BlockButton';
 import Leaf from '@/components/Leaf';
 import { isMarkActive, toggleMark } from '../lib/utils';
 
@@ -120,7 +122,9 @@ const SlateEditor: React.FC = () => {
         <Editable
           renderElement={renderElement}
           renderLeaf={renderLeaf}
-          placeholder="Edit your test plan here..."
+          placeholder="Manage your content ..."
+          spellCheck
+          autoFocus
           onKeyDown={handleKeyDown}
           className="p-4 bg-gray-700 rounded text-white"
         />

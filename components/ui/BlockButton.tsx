@@ -6,7 +6,7 @@ import { toggleBlock } from '@/lib/utils';  // We'll create this utility functio
 import { TEXT_ALIGN_TYPES, Align } from '@/lib/types';
 import Icon from '@/components/icons/Icon'
 
-const BlockButton: React.FC<{ format: string; icon: JSX.Element }> = ({ format, icon }) => {
+const BlockButton: React.FC<{ format: string; icon: string | JSX.Element  }> = ({ format, icon }) => {
   const editor = useSlate();
   return (
     <Button
