@@ -18,28 +18,27 @@ export const isMarkActive = (editor: Editor, format: string) => {
   return marks ? marks[format] === true : false;
 };
 
-export const isBlockActive = (editor: Editor, format: string, blockType: 'type' | 'align') => {
+export const isBlockActive = (editor: Editor, format: string, blockType: 'type' | 'align' = 'type') => {
   const { selection } = editor;
   if (!selection) return false;
 
-  // Type guard - Check if an element has the `align` property
-  const isAlignableElement = (element: CustomElement): element is CustomElement & { align?: Align } => {
-    return 'align' in element;
-    };
+  // Find nodes in the editor that match the block type or alignment
+  const [match] = Array.from(
+    Editor.nodes(editor, {
+      at: Editor.unhangRange(editor, selection),
+      match: (n: any) =>
+        !Editor.isEditor(n) &&
+        SlateElement.isElement(n) &&
+        (blockType === 'type'
+          ? n.type === format  // Check block type
+          : (n as CustomElement & { align?: Align }).align === format),
+       // n[blockType] === format,  // Match by type or align based on blockType
+    })
+  );
 
-    const [match] = Array.from(
-      Editor.nodes(editor, {
-        at: Editor.unhangRange(editor, selection),
-        match: (n: any) =>
-          !Editor.isEditor(n) &&
-          SlateElement.isElement(n) &&
-          (blockType === 'type'
-            ? n.type === format
-            : isAlignableElement(n) && n.align === format), // Check align only on elements that support it
-      })
-    );
-  return !!match;
+  return !!match;  // Return true if a match is found, otherwise false
 };
+
 
 export const toggleMark = (editor: Editor, format: string) => {
   const isActive = isMarkActive(editor, format);
@@ -51,43 +50,40 @@ export const toggleMark = (editor: Editor, format: string) => {
 };
 
 export const toggleBlock = (editor: Editor, format: string) => {
-  // Determine whether we are toggling an align or type block
-  const isAlignFormat = TEXT_ALIGN_TYPES.includes(format as Align);
-  const isActive = isBlockActive(editor, format, isAlignFormat ? 'align' : 'type');
+  const isActive = isBlockActive(
+    editor,
+    format,
+    TEXT_ALIGN_TYPES.includes(format as Align) ? 'align' : 'type'
+  );
   const isList = LIST_TYPES.includes(format as List);
-  // Type guard using the `List` type
-  const isListType = (type: string): type is List => {
-    return LIST_TYPES.includes(type as List); // Use the List type here
-  };
 
-   // Unwrap nodes for lists
-   Transforms.unwrapNodes(editor, {
+  // Unwrap any existing lists, but avoid unwrapping for alignment changes
+  Transforms.unwrapNodes(editor, {
     match: (n) =>
       !Editor.isEditor(n) &&
       SlateElement.isElement(n) &&
-      isListType(n.type) && // Using the type guard here
-      !TEXT_ALIGN_TYPES.includes(format as Align), // Ensure alignment doesn't affect list unwrapping
+      LIST_TYPES.includes(n.type as List) &&
+      !TEXT_ALIGN_TYPES.includes(format as Align), // Ensure alignment does not affect list unwrapping
     split: true,
   });
 
-  // Define newProperties as either align or type based on the format
-  let newProperties: Partial<SlateElement> & { align?: string };
-  
-  if (isAlignFormat) {
+  let newProperties: Partial<SlateElement>;
+  if (TEXT_ALIGN_TYPES.includes(format as Align)) {
+    // If format is an alignment option, set the align property
     newProperties = {
-      align: isActive ? undefined : (format as Align), // Use Align type here
+      align: isActive ? undefined : format as Align, // Clear alignment if already active
     };
   } else {
-    // Ensure `format` is one of the valid CustomElement types
+    // Otherwise, set the block type (e.g., list-item, paragraph, etc.)
     newProperties = {
-      type: isActive ? 'paragraph' : isList ? 'list-item' : (format as CustomElement['type']), // Toggle block type
+      type: isActive ? 'paragraph' : isList ? 'list-item' : (format as CustomElement['type']),
     };
   }
 
-   // Set the new properties (either align or type)
-  Transforms.setNodes(editor, newProperties as Partial<SlateElement>);
+  // Apply the new properties (either align or block type)
+  Transforms.setNodes<SlateElement>(editor, newProperties);
 
- // Wrap list items in a parent list block
+  // If it's a list type and not active, wrap the items in a list block
   if (!isActive && isList) {
     const block = { type: format as List, children: [] };
     Transforms.wrapNodes(editor, block);

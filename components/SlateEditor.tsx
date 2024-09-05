@@ -103,7 +103,7 @@ const SlateEditor: React.FC = () => {
   return (
     <div className="editor-container">
       <Slate editor={editor} initialValue={value} onChange={(newValue) => setValue(newValue)}>
-        <HoveringToolbar />
+        
         <Toolbar>
           <MarkButton format="bold" icon="format_bold" />
           <MarkButton format="italic" icon="format_italic" />

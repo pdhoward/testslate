@@ -12,6 +12,10 @@ const Element: React.FC<RenderElementProps> = (props) => {
     const { attributes, children, element } = props
     const customElement = element as CustomElement; 
     const style = { textAlign: (element as any).align as Align };
+
+    console.log(`=======inside of element=======`)
+    console.log(`attributes is ${JSON.stringify(attributes)}, element is ${JSON.stringify(element)}`)
+    console.log(`style is ${JSON.stringify(style)}`)
   
   switch (customElement.type) {
     case 'block-quote':
