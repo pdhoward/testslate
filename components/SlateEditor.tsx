@@ -126,7 +126,8 @@ const SlateEditor: React.FC = () => {
           spellCheck
           autoFocus
           onKeyDown={handleKeyDown}
-          className="p-4 bg-gray-700 rounded text-white"
+          className="m-4  p-4 bg-gray-500 rounded text-white focus-within:outline focus-within:outline-green-600 focus-within:outline-2 focus-within:px-[16px]"
+          style={{ fontFamily: "'Roboto', sans-serif" }}
         />
       </Slate>
     </div>

@@ -19,7 +19,7 @@ const TestPlanPage: React.FC = () => {
       {/* Main content - Editor */}
       <main className="w-4/5 p-6">
         <div className="editor-container h-full bg-gray-700 rounded-lg shadow-lg overflow-hidden">
-          <h1 className="text-3xl font-bold mb-8">Edit Test Plan</h1>
+          <h1 className="text-lg font-bold mb-8">Edit Test Plan</h1>
           <SlateEditor />
         </div>
       </main>
