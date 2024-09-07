@@ -30,5 +30,6 @@ const Button = forwardRef<HTMLSpanElement, PropsWithChildren<ButtonProps>>(
     );
   }
 );
-
+// Add the displayName for debugging
+Button.displayName = 'Button';
 export default Button;

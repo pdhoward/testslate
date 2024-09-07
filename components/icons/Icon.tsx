@@ -20,5 +20,7 @@ const Icon = forwardRef<HTMLSpanElement, PropsWithChildren<BaseProps>>(
     );
   }
 );
+// Add the displayName for debugging
+Icon.displayName = 'Icon';
 
 export default Icon;

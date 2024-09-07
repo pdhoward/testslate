@@ -6,8 +6,14 @@ import { toggleBlock } from '@/lib/utils';  // We'll create this utility functio
 import { TEXT_ALIGN_TYPES, Align } from '@/lib/types';
 import Icon from '@/components/icons/Icon'
 
-const BlockButton: React.FC<{ format: string; icon: string | JSX.Element  }> = ({ format, icon }) => {
-  const editor = useSlate();
+interface BlockButtonProps {
+  format: string;
+  icon: string | JSX.Element
+  editor: any; // Pass the editor directly
+}
+
+const BlockButton: React.FC<BlockButtonProps> = ({ format, icon, editor }) => {
+ 
   return (
     <Button
       active={isBlockActive(

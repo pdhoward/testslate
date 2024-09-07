@@ -1,20 +1,16 @@
+"use client"
 import React from 'react';
 import SlateEditor from '@/components/SlateEditor';
+import Header from '@/components/nav/Header';
+import { FileTreeComponent } from '@/components/nav/FileTreeComponent';
 
-const TestPlanPage: React.FC = () => {
+const HomePage: React.FC = () => {
   return (
+    
     <div className="min-h-screen bg-gray-900 text-white flex">
+      <Header />
       {/* Sidebar */}
-      <aside className="w-1/5 bg-gray-800 p-6 overflow-y-auto">
-        <h2 className="text-xl font-bold mb-6">Sidebar</h2>
-        {/* Sidebar content goes here */}
-        <ul>
-          <li className="mb-4">Menu Item 1</li>
-          <li className="mb-4">Menu Item 2</li>
-          <li className="mb-4">Menu Item 3</li>
-          <li className="mb-4">Menu Item 4</li>
-        </ul>
-      </aside>
+      <FileTreeComponent />
 
       {/* Main content - Editor */}
       <main className="w-4/5 p-6">
@@ -27,4 +23,4 @@ const TestPlanPage: React.FC = () => {
   );
 };
 
-export default TestPlanPage;
+export default HomePage;

@@ -24,5 +24,6 @@ const Menu = forwardRef<HTMLDivElement, PropsWithChildren<BaseProps>>(
     );
   }
 );
-
+// Add the displayName for debugging
+Menu.displayName = 'menu';
 export default Menu;

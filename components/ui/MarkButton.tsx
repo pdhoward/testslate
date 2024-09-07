@@ -6,8 +6,14 @@ import { toggleMark } from '@/lib/utils';  // We'll create this utility function
 import Icon from '@/components/icons/Icon'
 import { TEXT_ALIGN_TYPES, Align } from '@/lib/types';
 
-const MarkButton: React.FC<{ format: string; icon: string | JSX.Element  }> = ({ format, icon }) => {
-  const editor = useSlate();
+interface MarkButtonProps {
+  format: string;
+  icon: string | JSX.Element;
+  editor: any; // Pass the editor directly
+}
+
+const MarkButton: React.FC<MarkButtonProps> = ({ format, icon, editor }) => {
+  
   return (
     <Button
       active={isMarkActive(
