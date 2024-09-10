@@ -5,6 +5,7 @@ import SlateEditor from '@/components/SlateEditor';
 import CodeEditor from '@/components/code/CodeEditor'; 
 import Header from '@/components/nav/Header';
 import FileTreeComponent from '@/components/nav/FileTreeComponent';
+import DocTreeComponent from '@/components/nav/DocTreeComponent'
 import Tabs from '@/components/tabs/Tabs';
 import LLMMessagePanel from '@/components/LLMMessages';
 
@@ -42,7 +43,7 @@ export default function HomePageComponent({
           style={{ overflow: 'hidden' }}
         >
           <div style={{ height: '100%', overflowY: 'auto' }} className="bg-gray-900">
-            <FileTreeComponent />
+          {selectedTab === 'document' ? <DocTreeComponent /> : <FileTreeComponent />} 
           </div>          
         </Panel>
         
