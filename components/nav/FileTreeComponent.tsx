@@ -33,7 +33,7 @@ declare module 'react' {
   }
 }
 
-export const FileTreeComponent = () =>  {
+export default function FileTreeComponent () {
   const { treeData, updateFileTreeItemSelected } = useTreeData();  
   const [selectedItem, setSelectedItem] = useState<string>('');
   const [selectedItemObj, setSelectedItemObj] = useState<GithubData | null>(null);

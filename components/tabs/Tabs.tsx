@@ -15,7 +15,7 @@ const Tabs: React.FC<TabsProps> = ({ selectedTab, setSelectedTab }) => {
         }`}
         onClick={() => setSelectedTab('document')}
       >
-        Document Editor
+        UX
       </button>
       <button
         className={`p-3 px-6 rounded-t-md ${
@@ -23,7 +23,7 @@ const Tabs: React.FC<TabsProps> = ({ selectedTab, setSelectedTab }) => {
         }`}
         onClick={() => setSelectedTab('code')}
       >
-        Code Editor
+        DX
       </button>
     </div>
   );
