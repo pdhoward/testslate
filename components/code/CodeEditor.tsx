@@ -3,8 +3,6 @@ import React, {useState, useEffect, useCallback, useRef} from 'react';
 import Editor, {OnMount} from "@monaco-editor/react"
 import { Octokit } from "@octokit/rest";
 import { useTreeData } from "@/context/useTreeData";
-import { createHighlighter } from "shiki";
-import { shikiToMonaco } from '@shikijs/monaco'
 import * as monaco from 'monaco-editor';
 
 // Utility function to determine the language from the file extension
@@ -59,11 +57,10 @@ const getLanguageFromFileName = (fileName: string): string => {
 
 export default function CodeEditor ({}) {
   const [fileContent, setFileContent] = useState('');
-  const [language, setLanguage] = useState('plaintext');
+  const [language, setLanguage] = useState('javascript');
   const { isRightClicked, fileTreeItemSelected, repoDetails, updateRepoDetails } = useTreeData();
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null); // Ref to store the editor instance
   
-
   // Save the cursor position to localStorage
   const saveCursorPosition = (editor: any) => {
     const position = editor.getPosition();
@@ -127,92 +124,77 @@ export default function CodeEditor ({}) {
         });
     }
   }, [fileTreeItemSelected.itemIndex, repoDetails.owner, repoDetails.repo]);
-  
+    
 
   const handleEditorDidMount: OnMount = async (editor, monaco) => {
-
-    const highlighter = await createHighlighter({
-      themes: ['github-dark'],
-      langs: [
-        'javascript', 
-        'typescript', 
-        'css', 
-        'html',
-        'python',
-        'cobol',
-        'jsx', 
-        'tsx', 
-        'markdown', 
-        'mdx',
-        'sql',
-        'asm'
-      ], 
-    });
-
-    monaco.languages.register({ id: 'typescript' })
-    monaco.languages.register({ id: 'javascript' })
-    monaco.languages.register({ id: 'html' })
-    monaco.languages.register({ id: 'css' })
-    monaco.languages.register({ id: 'python' })
-    monaco.languages.register({ id: 'cobol' })
-    monaco.languages.register({ id: 'jsx' })
-    monaco.languages.register({ id: 'tsx' })
-    monaco.languages.register({ id: 'markdown' })
-    monaco.languages.register({ id: 'mdx' })
-    monaco.languages.register({ id: 'sql' })
-    monaco.languages.register({ id: 'asm' })
-
-    shikiToMonaco(highlighter, monaco)
-
-
-    editorRef.current = editor; // Assign the editor instance to the ref
-
-    // Set the editor to focus immediately
-    editor.focus();
-
-    // Example of setting editor options
-    editor.updateOptions({ wordWrap: 'on', minimap: { enabled: false } });    
-
-    editor.onDidChangeModelContent((event) => {      
-      saveContent()
-    });
-
-    // Restore cursor position if available
-    const savedPosition = getSavedCursorPosition();
-    if (savedPosition) {
-      editor.setPosition(savedPosition);
-      editor.revealPositionInCenter(savedPosition);
-    }
+    try {  
+      monaco.languages.register({ id: 'typescript' })
+      monaco.languages.register({ id: 'javascript' })
+      monaco.languages.register({ id: 'html' })
+      monaco.languages.register({ id: 'css' })
+      monaco.languages.register({ id: 'python' })
+      monaco.languages.register({ id: 'cobol' })
+      monaco.languages.register({ id: 'jsx' })
+      monaco.languages.register({ id: 'tsx' })
+      monaco.languages.register({ id: 'markdown' })
+      monaco.languages.register({ id: 'mdx' })
+      monaco.languages.register({ id: 'sql' })
+      monaco.languages.register({ id: 'asm' })     
   
-    // Register an event listener for cursor position changes
-    editor.onDidChangeCursorPosition(() => {
-      saveCursorPosition(editor);
-    });
-
-    //  Create a decorations collection
-    const decorations = editor.createDecorationsCollection();
+  
+      editorRef.current = editor; // Assign the editor instance to the ref
+  
+      // Set the editor to focus immediately
+      editor.focus();
+  
+      // Example of setting editor options
+      editor.updateOptions({ wordWrap: 'on', minimap: { enabled: false } });    
+  
+      editor.onDidChangeModelContent((event) => {      
+        saveContent()
+      });
+  
+      // Restore cursor position if available
+      const savedPosition = getSavedCursorPosition();
+      if (savedPosition) {
+        editor.setPosition(savedPosition);
+        editor.revealPositionInCenter(savedPosition);
+      }
     
-    // Add a decoration to the collection
-    decorations.clear(); // Clear any existing decorations in the collection
-    decorations.set([{
-      range: new monaco.Range(1, 1, 1, 1),
-      options: { isWholeLine: true, className: 'myLineDecoration' },
-    }]);
+      // Register an event listener for cursor position changes
+      editor.onDidChangeCursorPosition(() => {
+        saveCursorPosition(editor);
+      });
+  
+      //  Create a decorations collection
+      const decorations = editor.createDecorationsCollection();
+      
+      // Add a decoration to the collection
+      decorations.clear(); // Clear any existing decorations in the collection
+      decorations.set([{
+        range: new monaco.Range(1, 1, 1, 1),
+        options: { isWholeLine: true, className: 'myLineDecoration' },
+      }]);
+  
 
+    } catch (error){
+      console.error("Error in editor mounting:", error);
+    }
+    
   };
 
-  const headerOffsetClass = "mt-0"; 
+  const headerOffsetClass = "mt-2"; 
 
   return (
-    <div className={`${headerOffsetClass} overflow-hidden `} >       
+    <div className={`${headerOffsetClass} flex-grow h-full w-full overflow-hidden `} >       
         <Editor
-        height="100%"
-        defaultLanguage="javascript"
-        defaultValue="const message = `Visit https://github.com/altitude80ai/Welcome for docs`"
-        language={language}
-        value={fileContent}
-        theme="vs-dark"
-        onMount={handleEditorDidMount}
+          height="100%"
+          defaultLanguage={language || "javascript"}
+          defaultValue="const message = `Visit https://github.com/altitude80ai/Welcome for docs`"
+          language={language}
+          value={fileContent}
+          theme="vs-dark"
+          onMount={handleEditorDidMount}
         />      
     </div>
   );

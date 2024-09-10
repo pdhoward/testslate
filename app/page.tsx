@@ -7,12 +7,7 @@ export default function HomePage() {
   const defaultLayout = getDefaultLayout();
 
   return (
-    <main className="h-48 p-1">
-      <p>
-        This component uses both <code>cookies</code> and{" "}
-        <code>localStorage</code> to persist the last layout value. Resize the
-        panel below and then reload the page to see.
-      </p>
+    <main className="h-48 p-1">      
       <HomePageComponent defaultLayout={defaultLayout} />
     </main>
   );
