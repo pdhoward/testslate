@@ -30,7 +30,12 @@ const SlateEditor: React.FC = () => {
   
   return (
     <div className="editor-container">
-      <Slate editor={editor} initialValue={value} onChange={newValue => setValue(newValue)}>
+      <Slate 
+        editor={editor} 
+        initialValue={value} 
+        onChange={newValue => setValue(newValue)
+        }
+      >
       <Editable
           renderElement={renderElement}
           renderLeaf={renderLeaf}
