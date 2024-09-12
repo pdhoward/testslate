@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useEffect, useCallback, FunctionCo
 
 // MetaFileData type for migratedb meta data collection
 export type MetaFileData = {
+  _id: string;
   id: string;
   sha: string;
   path: string;

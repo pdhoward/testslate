@@ -5,6 +5,7 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import { useMetaData, FileTreeItemSelected } from "@/context/useMetaData";
 import {CustomTreeItem} from '@/components/nav/doctreestyle/CustomTreeItem'
+import { MetaFileData } from '@/context/useMetaData';
 
 
 //  STRUCTURE OF FILETREEITEMSELECTED FROM CONTEXT
@@ -89,9 +90,9 @@ declare module 'react' {
 export default function FileExplorer() {
   const { metaData, updateFileTreeItemSelected } = useMetaData(); 
 
-  //const getItemId = (item) => item.id;
-  //const getItemlabel = (item) => item.name;
-  //const isItemDisabled = (item) => !!item.disabled;
+  const getItemId = (item: MetaFileData) => item._id
+  const getItemlabel = (item: MetaFileData) => item.name;
+  const isItemDisabled = (item: MetaFileData) => !!item.isDeleted;
   return (
     <Stack spacing={2}>    
       <Box sx={{ 
@@ -101,7 +102,9 @@ export default function FileExplorer() {
         }}
       >
         <RichTreeView
-          items={metaData}          
+          items={metaData as MetaFileData[]} 
+          getItemId={getItemId} 
+          getItemLabel={getItemlabel}          
           sx={{ height: 'fit-content', flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}
           slots={{ item: CustomTreeItem }}
         />
