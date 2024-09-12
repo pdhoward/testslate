@@ -4,6 +4,7 @@ import "./globals.css";
 import 'material-icons/iconfont/material-icons.css';
 import { SlateProvider } from '@/context/SlateContext'; 
 import { TreeDataProvider } from '@/context/useTreeData';
+import { MetaDataProvider } from "@/context/useMetaData";
 import MuiXLicense from './muixlicense';
 
 const inter = Inter({ subsets: ["latin"] });
@@ -21,11 +22,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <TreeDataProvider>
-          <SlateProvider >
-            {children}
-          </SlateProvider>
-        </TreeDataProvider>
+        <MetaDataProvider >        
+          <TreeDataProvider>
+            <SlateProvider >
+              {children}
+            </SlateProvider>
+          </TreeDataProvider>
+        </MetaDataProvider>
         <MuiXLicense />
       </body>
     </html>

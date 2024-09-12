@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import getMongoConnection from '../../db/connections/index.js';
+import getMongoConnection from '@/db/connections/index.js';
 
 const uri = process.env.DB;
 const MIGRATEDB = process.env.MIGRATEDB;

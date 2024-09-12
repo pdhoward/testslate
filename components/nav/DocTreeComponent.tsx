@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models';
-import { useTreeData, FileTreeItemSelected } from "@/context/useTreeData";
+import { useMetaData, FileTreeItemSelected } from "@/context/useMetaData";
 import {CustomTreeItem} from '@/components/nav/doctreestyle/CustomTreeItem'
 
 
@@ -87,6 +87,7 @@ declare module 'react' {
 
 
 export default function FileExplorer() {
+  const { metaData, updateFileTreeItemSelected } = useMetaData(); 
 
   //const getItemId = (item) => item.id;
   //const getItemlabel = (item) => item.name;
@@ -100,9 +101,7 @@ export default function FileExplorer() {
         }}
       >
         <RichTreeView
-          items={ITEMS}
-          defaultExpandedItems={['1', '1.1']}
-          defaultSelectedItems="1.1"
+          items={metaData}          
           sx={{ height: 'fit-content', flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}
           slots={{ item: CustomTreeItem }}
         />
