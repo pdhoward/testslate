@@ -1,31 +1,7 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback, FunctionComponent, ReactNode } from 'react';
+import { MetaFileData } from '@/components/nav/DocTreeComponent';
 
-
-// MetaFileData type for migratedb meta data collection
-export type MetaFileData = {
-  _id: string;
-  id: string;
-  sha: string;
-  path: string;
-  name: string;
-  html_url: string | null;
-  type: 'image' | 'pdf' | 'doc' | 'video' | 'folder' | 'pinned' | 'trash' | 'file' | 'tree' | 'submodule' | 'symlink' | 'blob';
-  label: string;
-  artifactType: 'meta' | 'docs' | 'stories' | 'notes' | 'charts' | 'tests' | 'code' | 'rules' | 'datamap';
-  isDeleted: boolean;
-  createdOn: Date;
-  updatedOn: Date;
-  approvedOn: Date | null;
-  createdBy: string;
-  updatedBy: string;
-  approvedBy: string | null;
-  size: number | null;
-  extension: string | null;
-  description: string | null;
-  tags: string[];
-  isPinned: boolean;
-};
 
 interface MetaDataProviderProps {
   children: ReactNode;
@@ -72,13 +48,63 @@ export const useMetaData = (): MetaDataContextType => {
   return context;
 };
 
-///////////////////////////////////////////////
-// Function to build the document structure  //
-///////////////////////////////////////////////
-const buildMetaStructure = (items: MetaFileData[]): MetaFileData[] => {
-  // Logic for organizing documents can go here in future refactoring
-  return items; // Currently just returning items
-};
+/////////////////////////////////////////////////////
+// Function to build the document tree structure  //
+///////////////////////////////////////////////////
+const buildMetaTreeStructure = (items: MetaFileData[]): MetaFileData[] => {
+    const root: MetaFileData[] = [];
+    const pathMap: Record<string, MetaFileData> = {};
+  
+    items.forEach((item) => {
+      const segments = item.path.split('/');
+      const name = segments.pop() || "";
+      const path = segments.join('/');
+  
+      // Create a node with all the properties from MetaFileData
+      const node: MetaFileData = {
+        ...item, // Pass through all the data from MetaFileData
+        id: item.path, // Set id to item.path
+        name: name,
+        children: [], // Initialize children array
+      };
+  
+      if (item.type === 'tree' || item.type === 'folder') {
+        node.children = [];
+      }
+  
+      if (path === '') {
+        root.push(node); // Add to root if no parent path
+      } else {
+        const parent = pathMap[path];
+        if (parent) {
+          parent.children = parent.children || [];
+          parent.children.push(node); // Add the node to its parent
+        }
+      }
+  
+      pathMap[item.path] = node; // Add node to pathMap
+    });
+  
+    const sortNodes = (nodes: MetaFileData[]): MetaFileData[] => {
+      nodes.forEach((node) => {
+        if (node.children && node.children.length > 0) {
+          node.children = sortNodes(node.children); // Recursively sort children
+        }
+      });
+  
+      return nodes.sort((a, b) => {
+        // Folders should be sorted before files
+        if (a.type === 'tree' && b.type !== 'tree') return -1;
+        if (a.type !== 'tree' && b.type === 'tree') return 1;
+  
+        // Sort alphabetically if both are the same type
+        return a.name.localeCompare(b.name);
+      });
+    };
+  
+    return sortNodes(root); // Return the sorted tree structure
+  };
+  
 
 // MetaDataProvider component
 export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ children }) => {
@@ -146,7 +172,7 @@ export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ chi
           }
       
           const data = await response.json();
-          const metaStructure = buildMetaStructure(data as MetaFileData[]);
+          const metaStructure = buildMetaTreeStructure(data as MetaFileData[]);
           updateItems(metaStructure);
           clearError();
         } catch (error: any) {

@@ -5,36 +5,34 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import { useMetaData, FileTreeItemSelected } from "@/context/useMetaData";
 import {CustomTreeItem} from '@/components/nav/doctreestyle/CustomTreeItem'
-import { MetaFileData } from '@/context/useMetaData';
 
 
-//  STRUCTURE OF FILETREEITEMSELECTED FROM CONTEXT
-// type FileTreeItemSelected = {
-//   itemIndex: string;  // set to sha from github
-//   itemName: string;   // name of item .. ie cpy (directory) or cocom01y.cpy
-//   itemId: string;     // path to item
-//   itemLabel: string;  // full github http path to item  
-//   itemType: string;   // file, blob, tree, etc
-// };
-
-//  STRUCTURE OF DOCTREEITEMSELECTED FROM CONTEXT
-// type DocTreeItemSelected = {
-//   itemIndex: string;  // set to Object(_id) from mongo
-//   itemName: string;   // name of item .. ie cpy (directory) or cocom01y.cpy
-//   itemId: string;     // path to item
-//   itemLabel: string;  // full github http path to item  
-//   itemType: string;   // file, blob, tree, etc
-// };
-
-export type DocData = TreeViewBaseItem<{
+// MetaFileData type for migratedb meta data collection
+export type MetaFileData = TreeViewBaseItem<{
+  _id: string;
   id: string;
-  name: string;
-  label: string;
   sha: string;
-  disabled?: boolean;
-  type: 'image' | 'pdf' | 'doc' | 'video' | 'folder' | 'pinned' | 'trash' | 'file';
-  children?: DocData[];
+  path: string;
+  name: string;
+  html_url: string | null;
+  type: 'image' | 'pdf' | 'doc' | 'video' | 'folder' | 'pinned' | 'trash' | 'file' | 'tree' | 'submodule' | 'symlink' | 'blob';
+  label: string;
+  artifactType: 'meta' | 'docs' | 'stories' | 'notes' | 'charts' | 'tests' | 'code' | 'rules' | 'datamap';
+  isDeleted: boolean;
+  createdOn: Date;
+  updatedOn: Date;
+  approvedOn: Date | null;
+  createdBy: string;
+  updatedBy: string;
+  approvedBy: string | null;
+  size: number | null;
+  extension: string | null;
+  description: string | null;
+  tags: string[];
+  isPinned: boolean;
+  children?: MetaFileData[];
 }>;
+
 
 type FileType = 'image' | 'pdf' | 'doc' | 'video' | 'folder' | 'pinned' | 'trash';
 
