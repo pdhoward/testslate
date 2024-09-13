@@ -2,6 +2,78 @@
 import { createContext, useContext, useState, useEffect, useCallback, FunctionComponent, ReactNode } from 'react';
 import { MetaFileData } from '@/components/nav/DocTreeComponent';
 
+// Define the folder templates
+const folderTemplates = [
+  { name: "repo", collection: "meta", db: "migrate" },
+  { name: "dashboard", collection: "dashboards", db: "migrate" },
+  { name: "insights", collection: "insights", db: "migrate" },
+  { name: "rules", collection: "rules", db: "migrate" },
+  { name: "data", collection: "datamaps", db: "migrate" },
+  { name: "stories", collection: "stories", db: "migrate" },
+  { name: "tests", collection: "tests", db: "migrate" },
+  { name: "notes", collection: "notes", db: "migrate" },
+  { name: "out of scope", collection: "outOfScope", db: "migrate" },
+  { name: "pinned", collection: "pinned", db: "migrate" },
+  { name: "prompts", collection: "prompts", db: "migrate" },
+  { name: "trash", collection: "trash", db: "migrate" },
+];
+
+
+// MetaFileData mock template for generating mock data
+const createMockMetaFileData = (folder: string): MetaFileData[] => {
+  return [
+    {
+      _id: `${folder}-file-1`,
+      id: `${folder}/file-1`,
+      sha: 'abc123',
+      path: `${folder}/file-1`,
+      name: `File 1 in ${folder}`,
+      html_url: null,
+      type: 'file',
+      label: `File 1`,
+      artifactType: 'meta',
+      isDeleted: false,
+      createdOn: new Date(),
+      updatedOn: new Date(),
+      approvedOn: null,
+      createdBy: 'User1',
+      updatedBy: 'User1',
+      approvedBy: null,
+      size: 1200,
+      extension: 'txt',
+      description: `This is a mock file in ${folder}`,
+      tags: ['mock'],
+      isPinned: false,
+      children: [],
+    },
+    {
+      _id: `${folder}-file-2`,
+      id: `${folder}/file-2`,
+      sha: 'def456',
+      path: `${folder}/file-2`,
+      name: `File 2 in ${folder}`,
+      html_url: null,
+      type: 'file',
+      label: `File 2`,
+      artifactType: 'meta',
+      isDeleted: false,
+      createdOn: new Date(),
+      updatedOn: new Date(),
+      approvedOn: null,
+      createdBy: 'User1',
+      updatedBy: 'User1',
+      approvedBy: null,
+      size: 1300,
+      extension: 'pdf',
+      description: `This is another mock file in ${folder}`,
+      tags: ['mock'],
+      isPinned: false,
+      children: [],
+    },
+  ];
+};
+
+
 
 interface MetaDataProviderProps {
   children: ReactNode;
@@ -158,9 +230,9 @@ export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ chi
     const fetchMetaData = async () => {
         try {
           const response = await fetch('/api/fetchmetadata', {
-            method: 'POST', // Set method to POST
+            method: 'POST',
             headers: {
-              'Content-Type': 'application/json', // Set content type to JSON
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify({
               dbDetails, // Pass db + collection object as the body
@@ -171,17 +243,76 @@ export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ chi
             throw new Error(`Failed to fetch: ${response.statusText}`);
           }
       
-          const data = await response.json();
-          const metaStructure = buildMetaTreeStructure(data as MetaFileData[]);
+          let data = await response.json();
+
+          /////////////////////////////////////////////
+          // Step 1: Modify each path with 'repo/'
+          /////////////////////////////////////////////
+          data = data.map((item: MetaFileData) => ({
+            ...item,
+            path: `repo/${item.path}`, // Prepend 'repo/' to the path
+          }));
+
+          /////////////////////////////////////////////
+          // Step 2: Create root folders for each template
+          /////////////////////////////////////////////
+          let rootFolders: MetaFileData[] = folderTemplates.map(folder => ({
+            _id: `${folder.name}-root`,
+            id: `${folder.name}`,
+            sha: '', // Placeholder value, since root folders likely don’t have a sha
+            path: `${folder.name}`, // Root path for this folder
+            name: folder.name, // Folder name
+            html_url: null, // No HTML URL for root folders
+            type: 'folder', // Mark as a folder
+            label: folder.name, // Label for display
+            artifactType: 'meta',
+            isDeleted: false,
+            createdOn: new Date(),
+            updatedOn: new Date(),
+            approvedOn: null,
+            createdBy: 'System',
+            updatedBy: 'System',
+            approvedBy: null,
+            size: null, // No size for the root folder
+            extension: null, // No extension for folders
+            description: `Root folder for ${folder.name}`,
+            tags: [],
+            isPinned: false,
+            children: [], // Initialize as empty; will be populated by child files/folders
+          }));
+
+          /////////////////////////////////////////////
+          // Step 3: Create mock data for all folders
+          /////////////////////////////////////////////
+          let allFoldersData: MetaFileData[] = [];
+
+          folderTemplates.forEach(folder => {
+            const mockData = createMockMetaFileData(folder.name);
+            allFoldersData = [...allFoldersData, ...mockData];
+          });
+
+          /////////////////////////////////////////////
+          // Step 4: Merge root folders, real data, and mock data
+          /////////////////////////////////////////////
+          const mergedData = [...rootFolders, ...data, ...allFoldersData];
+
+          ///////////////////////////////////////////////////////
+          // Step 5: Pass merged data to buildMetaTreeStructure//
+          //////////////////////////////////////////////////////
+          const metaStructure = buildMetaTreeStructure(mergedData);
+          console.log(metaStructure);
+
           updateItems(metaStructure);
           clearError();
         } catch (error: any) {
           setError(`Error retrieving metadata: ${error.message}`);
         }
-      };
+    };
 
     fetchMetaData();
-  }, [updateItems, clearError]);
+}, [updateItems, clearError]);
+
+
 
   const contextValue: MetaDataContextType = {
     metaData,
