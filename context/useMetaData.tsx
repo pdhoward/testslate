@@ -282,13 +282,15 @@ export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ chi
           }));
 
           /////////////////////////////////////////////
-          // Step 3: Create mock data for all folders
+          // Step 3: Create mock data for all folders except repo
           /////////////////////////////////////////////
           let allFoldersData: MetaFileData[] = [];
 
           folderTemplates.forEach(folder => {
-            const mockData = createMockMetaFileData(folder.name);
-            allFoldersData = [...allFoldersData, ...mockData];
+            if (folder.name !== 'repo') {
+              const mockData = createMockMetaFileData(folder.name);
+              allFoldersData = [...allFoldersData, ...mockData];
+            }
           });
 
           /////////////////////////////////////////////
@@ -300,9 +302,21 @@ export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ chi
           // Step 5: Pass merged data to buildMetaTreeStructure//
           //////////////////////////////////////////////////////
           const metaStructure = buildMetaTreeStructure(mergedData);
-          console.log(metaStructure);
 
-          updateItems(metaStructure);
+          /////////////////////////////////////////////
+          // Step 6: Sort root folders by folderTemplates order
+          /////////////////////////////////////////////
+          const sortedMetaStructure = metaStructure.sort((a, b) => {
+            // Find index of each root folder in folderTemplates
+            const indexA = folderTemplates.findIndex(folder => folder.name === a.name);
+            const indexB = folderTemplates.findIndex(folder => folder.name === b.name);
+
+            return indexA - indexB; // Sort by index order
+          });
+
+          console.log(sortedMetaStructure);
+
+          updateItems(sortedMetaStructure);
           clearError();
         } catch (error: any) {
           setError(`Error retrieving metadata: ${error.message}`);
