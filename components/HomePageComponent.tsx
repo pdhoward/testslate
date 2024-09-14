@@ -8,6 +8,7 @@ import FileTreeComponent from '@/components/nav/FileTreeComponent';
 import DocTreeComponent from '@/components/nav/DocTreeComponent'
 import Tabs from '@/components/tabs/Tabs';
 import LLMMessagePanel from '@/components/LLMMessages';
+import { useMetaData } from '@/context/useMetaData';
 
 export default function HomePageComponent({
   defaultLayout
@@ -15,7 +16,11 @@ export default function HomePageComponent({
   defaultLayout: number[];
 }) {
   const [selectedTab, setSelectedTab] = useState<'document' | 'code'>('document'); // Tab state
+  const { isRightClicked, fileTreeItemSelected } = useMetaData();
 
+  console.log(`----in homepage component -----`)
+  console.log(isRightClicked, fileTreeItemSelected)
+  
   const onLayout = (sizes: number[]) => {
     document.cookie = `react-resizable-panels:layout=${JSON.stringify(sizes)}`;
   };

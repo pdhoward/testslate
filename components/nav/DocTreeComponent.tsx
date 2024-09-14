@@ -51,6 +51,54 @@ declare module 'react' {
 
 export default function FileExplorer() {
   const { metaData, updateFileTreeItemSelected } = useMetaData(); 
+  const [selectedItem, setSelectedItem] = useState<string>('');
+
+  const findItemById = (items: MetaFileData[], id: string): MetaFileData | null => {
+    for (const item of items) {
+      if (item.id === id) {
+        return item;
+      }
+      if (item.children) {
+        const found = findItemById(item.children, id);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return null;
+  };
+
+  const handleSelectedItemsChange = (event: React.SyntheticEvent, itemId: string | null) => {
+
+    console.log(`------inside of doctreecomponent -----`)
+    console.log(itemId)
+    console.log(metaData)
+    if (itemId) {
+      const foundSelectedItem = findItemById(metaData, itemId);
+      console.log(foundSelectedItem)
+      if (foundSelectedItem) {
+        //setSelectedItemObj(selectedItem);    
+       
+        const fileTreeItemSelected: FileTreeItemSelected = {
+          itemIndex: foundSelectedItem.sha,
+          itemName: foundSelectedItem.name,
+          itemId: itemId,
+          itemLabel: foundSelectedItem.label,           
+          itemDocumentType: foundSelectedItem.documentType,
+          itemArtifactType: foundSelectedItem.artifactType
+
+        };
+        // file detected so notify context
+        updateFileTreeItemSelected(fileTreeItemSelected);
+        
+        // set selected item SHA to pass to mui Tree
+        if (foundSelectedItem.sha) {
+          setSelectedItem(foundSelectedItem.sha);
+        }
+      }
+    }
+  };
+ 
 
   const getItemId = (item: MetaFileData) => item._id
   const getItemlabel = (item: MetaFileData) => item.name;
@@ -65,6 +113,8 @@ export default function FileExplorer() {
       >
         <RichTreeView
           items={metaData as MetaFileData[]} 
+          selectedItems={selectedItem}
+          onSelectedItemsChange={handleSelectedItemsChange}
           getItemId={getItemId} 
           getItemLabel={getItemlabel}          
           sx={{ height: 'fit-content', flexGrow: 1, maxWidth: 400, overflowY: 'auto' }}

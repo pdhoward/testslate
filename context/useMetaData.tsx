@@ -106,7 +106,8 @@ export type FileTreeItemSelected = {
   itemName: string;
   itemId: string;
   itemLabel: string;
-  itemType: string;
+  itemDocumentType: string;
+  itemArtifactType: string;
 };
 
 // MetaDataContext with initial undefined value
@@ -192,7 +193,8 @@ export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ chi
     itemName: "",
     itemId: "",
     itemLabel: "",
-    itemType: ""
+    itemDocumentType: "",
+    itemArtifactType: ""
   });
 
   const [error, setError] = useState<string | null>(null);
@@ -313,9 +315,7 @@ export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ chi
             const indexB = folderTemplates.findIndex(folder => folder.name === b.name);
 
             return indexA - indexB; // Sort by index order
-          });
-
-          console.log(sortedMetaStructure);
+          });         
 
           updateItems(sortedMetaStructure);
           clearError();

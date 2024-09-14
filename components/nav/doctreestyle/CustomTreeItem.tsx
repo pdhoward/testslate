@@ -71,8 +71,6 @@ const getIconFromFileType = (
   isExpanded: boolean, 
   isFolder: boolean
 ) => {
-    console.log(fileType, artifactType, isFolder, isExpanded);
-
     // handle root level folder for repor
     if (isFolder && artifactType === 'repo'){
       return isExpanded ? CodeOutlinedIcon : CodeIcon;
