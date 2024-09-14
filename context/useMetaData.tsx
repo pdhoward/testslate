@@ -6,16 +6,17 @@ import { ArtifactType } from '@/lib/types';
 const folderTemplates: { name: string; collection: string; db: string; artifactType: ArtifactType }[] = [
   { name: "repo", collection: "meta", db: "migrate", artifactType: "repo" },
   { name: "dashboard", collection: "dashboards", db: "migrate", artifactType: "charts" },
+  { name: "business process", collection: "process", db: "migrate", artifactType: "process" },
   { name: "insights", collection: "insights", db: "migrate", artifactType: "insights" },
   { name: "rules", collection: "rules", db: "migrate", artifactType: "rules" },
   { name: "data", collection: "datamaps", db: "migrate", artifactType: "data" },
   { name: "stories", collection: "stories", db: "migrate", artifactType: "stories" },
   { name: "tests", collection: "tests", db: "migrate", artifactType: "tests" },
   { name: "notes", collection: "notes", db: "migrate", artifactType: "notes" },
-  { name: "out of scope", collection: "outOfScope", db: "migrate", artifactType: "meta" },
-  { name: "pinned", collection: "pinned", db: "migrate", artifactType: "meta" },
+  { name: "out of scope", collection: "outOfScope", db: "migrate", artifactType: "scope" },
+  { name: "pinned", collection: "pinned", db: "migrate", artifactType: "pinned" },
   { name: "prompts", collection: "prompts", db: "migrate", artifactType: "prompts" },
-  { name: "discard", collection: "trash", db: "migrate", artifactType: "meta" },
+  { name: "discard", collection: "trash", db: "migrate", artifactType: "discard" },
 ];
 
 

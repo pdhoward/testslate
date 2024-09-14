@@ -4,7 +4,7 @@ import { HistoryEditor } from 'slate-history';
 
 // types for the metafile definition
 export type DocumentType = 'image' | 'pdf' | 'text' | 'video' | 'folder' | 'file' | 'tree' | 'submodule' | 'symlink' | 'blob';
-export type ArtifactType = 'meta' | 'insights' | 'stories' | 'notes' | 'charts' | 'tests' | 'code' | 'rules' | 'data' | 'prompts' | 'repo' | 'github';
+export type ArtifactType = 'meta' | 'insights' | 'process' | 'stories' | 'notes' | 'charts' | 'tests' | 'code' | 'rules' | 'data' | 'prompts' | 'repo' | 'github' | 'discard' | 'pinned' | 'scope';
 
 // Alignment and List types for text blocks
 export type Align = 'left' | 'center' | 'right' | 'justify';
