@@ -2,6 +2,10 @@ import { BaseEditor, Descendant } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
 
+// types for the metafile definition
+export type DocumentType = 'image' | 'pdf' | 'text' | 'video' | 'folder' | 'file' | 'tree' | 'submodule' | 'symlink' | 'blob';
+export type ArtifactType = 'meta' | 'insights' | 'stories' | 'notes' | 'charts' | 'tests' | 'code' | 'rules' | 'data' | 'prompts' | 'repo' | 'github';
+
 // Alignment and List types for text blocks
 export type Align = 'left' | 'center' | 'right' | 'justify';
 export type List = 'numbered-list' | 'bulleted-list'

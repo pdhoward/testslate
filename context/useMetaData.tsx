@@ -1,21 +1,21 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback, FunctionComponent, ReactNode } from 'react';
 import { MetaFileData } from '@/components/nav/DocTreeComponent';
+import { ArtifactType } from '@/lib/types';
 
-// Define the folder templates
-const folderTemplates = [
-  { name: "repo", collection: "meta", db: "migrate" },
-  { name: "dashboard", collection: "dashboards", db: "migrate" },
-  { name: "insights", collection: "insights", db: "migrate" },
-  { name: "rules", collection: "rules", db: "migrate" },
-  { name: "data", collection: "datamaps", db: "migrate" },
-  { name: "stories", collection: "stories", db: "migrate" },
-  { name: "tests", collection: "tests", db: "migrate" },
-  { name: "notes", collection: "notes", db: "migrate" },
-  { name: "out of scope", collection: "outOfScope", db: "migrate" },
-  { name: "pinned", collection: "pinned", db: "migrate" },
-  { name: "prompts", collection: "prompts", db: "migrate" },
-  { name: "trash", collection: "trash", db: "migrate" },
+const folderTemplates: { name: string; collection: string; db: string; artifactType: ArtifactType }[] = [
+  { name: "repo", collection: "meta", db: "migrate", artifactType: "repo" },
+  { name: "dashboard", collection: "dashboards", db: "migrate", artifactType: "charts" },
+  { name: "insights", collection: "insights", db: "migrate", artifactType: "insights" },
+  { name: "rules", collection: "rules", db: "migrate", artifactType: "rules" },
+  { name: "data", collection: "datamaps", db: "migrate", artifactType: "data" },
+  { name: "stories", collection: "stories", db: "migrate", artifactType: "stories" },
+  { name: "tests", collection: "tests", db: "migrate", artifactType: "tests" },
+  { name: "notes", collection: "notes", db: "migrate", artifactType: "notes" },
+  { name: "out of scope", collection: "outOfScope", db: "migrate", artifactType: "meta" },
+  { name: "pinned", collection: "pinned", db: "migrate", artifactType: "meta" },
+  { name: "prompts", collection: "prompts", db: "migrate", artifactType: "prompts" },
+  { name: "discard", collection: "trash", db: "migrate", artifactType: "meta" },
 ];
 
 
@@ -29,7 +29,7 @@ const createMockMetaFileData = (folder: string): MetaFileData[] => {
       path: `${folder}/file-1`,
       name: `File 1 in ${folder}`,
       html_url: null,
-      type: 'file',
+      documentType: 'file',
       label: `File 1`,
       artifactType: 'meta',
       isDeleted: false,
@@ -53,7 +53,7 @@ const createMockMetaFileData = (folder: string): MetaFileData[] => {
       path: `${folder}/file-2`,
       name: `File 2 in ${folder}`,
       html_url: null,
-      type: 'file',
+      documentType: 'file',
       label: `File 2`,
       artifactType: 'meta',
       isDeleted: false,
@@ -140,7 +140,7 @@ const buildMetaTreeStructure = (items: MetaFileData[]): MetaFileData[] => {
         children: [], // Initialize children array
       };
   
-      if (item.type === 'tree' || item.type === 'folder') {
+      if (item.documentType === 'tree' || item.documentType === 'folder') {
         node.children = [];
       }
   
@@ -166,8 +166,8 @@ const buildMetaTreeStructure = (items: MetaFileData[]): MetaFileData[] => {
   
       return nodes.sort((a, b) => {
         // Folders should be sorted before files
-        if (a.type === 'tree' && b.type !== 'tree') return -1;
-        if (a.type !== 'tree' && b.type === 'tree') return 1;
+        if (a.documentType === 'tree' && b.documentType !== 'tree') return -1;
+        if (a.documentType !== 'tree' && b.documentType === 'tree') return 1;
   
         // Sort alphabetically if both are the same type
         return a.name.localeCompare(b.name);
@@ -263,9 +263,9 @@ export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ chi
             path: `${folder.name}`, // Root path for this folder
             name: folder.name, // Folder name
             html_url: null, // No HTML URL for root folders
-            type: 'folder', // Mark as a folder
+            documentType: 'folder', // Mark as a folder
             label: folder.name, // Label for display
-            artifactType: 'meta',
+            artifactType: folder.artifactType,
             isDeleted: false,
             createdOn: new Date(),
             updatedOn: new Date(),

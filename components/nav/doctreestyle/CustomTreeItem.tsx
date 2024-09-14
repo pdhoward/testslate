@@ -8,6 +8,16 @@ import FileIcon from '@mui/icons-material/InsertDriveFileOutlined';
 import ImageIcon from '@mui/icons-material/Image';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import VideoCameraBackIcon from '@mui/icons-material/VideoCameraBack';
+import RemoveDoneIcon from '@mui/icons-material/RemoveDone'; // out of scope
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
+import CommentIcon from '@mui/icons-material/Comment'; // insights
+import CommentOutlinedIcon from '@mui/icons-material/CommentOutlined';
+import AnalyzeIcon from '@mui/icons-material/Topic' // rules
+import SupervisedUserCircleIcon from '@mui/icons-material/SupervisedUserCircle'; // stories
+import AccountTreeIcon from '@mui/icons-material/AccountTree'; // business process
+import BiotechIcon from '@mui/icons-material/Biotech'; // test
+import DataObjectIcon from '@mui/icons-material/DataObject'; // data
 import {
   unstable_useTreeItem2 as useTreeItem2,
   UseTreeItem2Parameters,
@@ -24,11 +34,10 @@ import {TransitionComponent} from '@/components/nav/filetreestyle/TransitionComp
 import {StyledTreeItemRoot} from '@/components/nav/filetreestyle/StyledTreeItemRoot'
 import {CustomTreeItemContent} from '@/components/nav/filetreestyle/CustomTreeItemContent'
 import { useTreeData } from '@/context/useTreeData';
+import { DocumentType, ArtifactType } from '@/lib/types';
 
 // A wrapper for each tree item, handling its state and appearance 
 // based on its type and expandability.
-
-type type = 'image' | 'pdf' | 'doc' | 'video' | 'folder' | 'pinned' | 'trash' | 'tree' | 'blob' | 'file';
 
 interface CustomTreeItemProps
   extends Omit<UseTreeItem2Parameters, 'rootRef'>,
@@ -43,7 +52,9 @@ const isExpandable = (reactChildren: React.ReactNode) => {
 
 // Returns the appropriate icon for a given file type and folder 
 // state.
-const getIconFromFileType = (fileType: type, isExpanded: boolean, isFolder: boolean) => {
+const getIconFromFileType = (fileType: DocumentType, artifactType: ArtifactType, isExpanded: boolean, isFolder: boolean) => {
+    
+    console.log(fileType, artifactType, isFolder, isExpanded)
     if (isFolder) {
       return isExpanded ? FolderOpenIcon : FolderRounded;
     }
@@ -52,14 +63,12 @@ const getIconFromFileType = (fileType: type, isExpanded: boolean, isFolder: bool
         return ImageIcon;
       case 'pdf':
         return PictureAsPdfIcon;
-      case 'doc':
+      case 'text':
         return ArticleIcon;
       case 'video':
         return VideoCameraBackIcon;    
       case 'blob':
-        return FileIcon;
-      case 'trash':
-        return DeleteIcon;
+        return FileIcon;      
       default:
         return ArticleIcon;
     }
@@ -96,9 +105,14 @@ export const CustomTreeItem = React.forwardRef(function CustomTreeItem(
   } = useTreeItem2({ itemId, children, label, disabled, rootRef: ref });
 
   const item = publicAPI.getItem(itemId);
-  const expandable = isExpandable(children);
+  const expandable = isExpandable(children);  
+
+  /////////////////////////////////////////////////////
+  /// note that name and path are used to assign  ////
+  //     specialized icons for the root process    //
+  //////////////////////////////////////////////////
   
-  const icon = getIconFromFileType(item.type, status.expanded, expandable);
+  const icon = getIconFromFileType(item.documentType, item.artifactType, status.expanded, expandable);
  
   return (
     <TreeItem2Provider itemId={itemId}>

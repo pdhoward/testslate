@@ -5,7 +5,7 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import { useMetaData, FileTreeItemSelected } from "@/context/useMetaData";
 import {CustomTreeItem} from '@/components/nav/doctreestyle/CustomTreeItem'
-
+import { DocumentType, ArtifactType } from '@/lib/types';
 
 // MetaFileData type for migratedb meta data collection
 export type MetaFileData = TreeViewBaseItem<{
@@ -15,9 +15,9 @@ export type MetaFileData = TreeViewBaseItem<{
   path: string;
   name: string;
   html_url: string | null;
-  type: 'image' | 'pdf' | 'doc' | 'video' | 'folder' | 'pinned' | 'trash' | 'file' | 'tree' | 'submodule' | 'symlink' | 'blob';
+  documentType: DocumentType
   label: string;
-  artifactType: 'meta' | 'docs' | 'stories' | 'notes' | 'charts' | 'tests' | 'code' | 'rules' | 'datamap';
+  artifactType: ArtifactType
   isDeleted: boolean;
   createdOn: Date;
   updatedOn: Date;
