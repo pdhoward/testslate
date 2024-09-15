@@ -16,7 +16,7 @@ type UIContext = {
 export const UiContext = createContext<UIContext | undefined>(undefined);
   
 
-// Hook to use MetaDataContext
+// Hook to use UI Context
 export const useUiContext = () => {
     const context = useContext(UiContext);
     if (!context) {

@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from "next/navigation";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import SlateEditor from '@/components/SlateEditor';
 import CodeEditor from '@/components/code/CodeEditor'; 
@@ -15,11 +16,18 @@ export default function HomePageComponent({
 }: {
   defaultLayout: number[];
 }) {
-  const [selectedTab, setSelectedTab] = useState<'document' | 'code'>('document'); // Tab state
+  const [selectedTab, setSelectedTab] = useState<'document' | 'code' | 'ai'>('document'); // Tab state
   const { isRightClicked, fileTreeItemSelected } = useMetaData();
+  const router = useRouter(); // Initialize the router
 
   console.log(`----in homepage component -----`)
   console.log(isRightClicked, fileTreeItemSelected)
+
+  useEffect(() => {
+    if (selectedTab === "ai") {
+      router.push("/explore"); // Navigate to /explore when 'ai' tab is selected
+    }
+  }, [selectedTab, router]);
   
   const onLayout = (sizes: number[]) => {
     document.cookie = `react-resizable-panels:layout=${JSON.stringify(sizes)}`;

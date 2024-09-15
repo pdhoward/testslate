@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import 'material-icons/iconfont/material-icons.css';
-
+import { UIProvider } from '@/context/ui/useUiContext';
 import { SlateProvider } from '@/context/SlateContext'; 
 import { TreeDataProvider } from '@/context/useTreeData';
 import { MetaDataProvider } from "@/context/useMetaData";
@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-       
+      <UIProvider>
           <MetaDataProvider >        
             <TreeDataProvider>
               <SlateProvider >
@@ -31,7 +31,7 @@ export default function RootLayout({
               </SlateProvider>
             </TreeDataProvider>          
           </MetaDataProvider>
-        
+      </UIProvider>
         <MuiXLicense />
       </body>
     </html>

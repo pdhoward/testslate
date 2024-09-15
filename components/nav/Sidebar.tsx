@@ -11,20 +11,19 @@ import {
   } from "@mui/material";
   import InboxOutlinedIcon from "@mui/icons-material/InboxOutlined";
   import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
-  import { useContext } from "react";
-  import { UIContext } from "@/context/ui/useUiContext";
+  import {useUiContext} from "@/context/ui/useUiContext";
   
   const menuItems: string[] = ["Inbox", "Starred", "Send Email", "Drafts"];
   
   export const Sidebar = () => {
   
-    const { sidemenuOpen, closeSideMenu} = useContext(UIContext)
+   const { sidemenuOpen, closeSideMenu} = useUiContext()
   
     return (
       <>
-        <Drawer anchor={"left"} open={sidemenuOpen} onClose={closeSideMenu} >
+        <Drawer anchor={"left"} open={sidemenuOpen} onClose={closeSideMenu}  >
           <Box  sx={{ padding: "5px 10px", width: 250 }}>
-            <Typography variant="h4">Open Jira</Typography>
+            <Typography variant="h6">AI Exploration</Typography>
   
             <List>
               {menuItems.map((text, index) => (
@@ -52,9 +51,7 @@ import {
                   </ListItemButton>
                 </ListItem>
               ))}
-            </List>
-  
-  
+            </List>  
           </Box>
         </Drawer>
       </>

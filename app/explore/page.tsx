@@ -1,9 +1,10 @@
 "use client"
 import { useState, useEffect } from 'react';
-import Layout from './layout';
-import { Stack, Card, CardHeader, CardContent, Typography, Button } from '@mui/material';
+import { Box, Stack, Card, CardHeader, CardContent, Typography, Button } from '@mui/material';
 import { Document } from '@/lib/types'; 
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
+import Navbar from '@/components/nav/Navbar'
+import { Sidebar } from '@/components/nav/Sidebar';
 import Link from 'next/link';
 
 export default function Home() {
@@ -24,10 +25,12 @@ export default function Home() {
   // Use effect to fetch documents when the component is mounted
   useEffect(() => {
     fetchDocuments();
-  }, [router.query.fileId]); // Assuming the fileId is passed when the file is clicked
+  }, []); // Assuming the fileId is passed when the file is clicked
 
   return (
-    <Layout title="AI Document Explorer">
+    <Box sx={{ flexFlow: 1 }}> 
+      <Navbar  />
+      <Sidebar />
       <Stack direction="row" spacing={2} flexWrap="wrap">
         {documents.map((doc) => (
            <Stack key={doc.id} sx={{ flex: '1 1 30%', minWidth: '300px' }}>
@@ -47,6 +50,6 @@ export default function Home() {
           </Stack>
         ))}
       </Stack>
-    </Layout>
+    </Box>
   );
 }
