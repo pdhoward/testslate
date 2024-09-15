@@ -101,3 +101,12 @@ declare module 'slate' {
     Text: CustomText;
   }
 }
+
+// interfaces/documents.ts
+export interface Document {
+  id: string;
+  title: string;
+  type: string; // e.g., business-process, rules, stories, etc.
+  content: string;
+}
+
