@@ -1,6 +1,7 @@
 import { BaseEditor, Descendant } from 'slate';
 import { ReactEditor } from 'slate-react';
 import { HistoryEditor } from 'slate-history';
+import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 
 // types for the metafile definition
 export type DocumentType = 'image' | 'pdf' | 'text' | 'video' | 'folder' | 'file' | 'tree' | 'submodule' | 'symlink' | 'blob';
@@ -109,4 +110,35 @@ export interface Document {
   type: string; // e.g., business-process, rules, stories, etc.
   content: string;
 }
+
+
+// MetaFileData type for migratedb meta data collection
+export type MetaFileData = TreeViewBaseItem<{
+  _id: string;
+  id: string;
+  sha: string;
+  org: string;
+  application: string;
+  path: string;
+  name: string;
+  html_url: string | null;
+  documentType: DocumentType
+  label: string;
+  artifactType: ArtifactType
+  isDeleted: boolean;
+  createdOn: Date;
+  updatedOn: Date;
+  approvedOn: Date | null;
+  createdBy: string;
+  updatedBy: string;
+  approvedBy: string | null;
+  size: number | null;
+  extension: string | null;
+  description: string | null;
+  tags: string[];
+  usedInProcess: string[];
+  inScope: boolean,
+  isPinned: boolean;
+  children?: MetaFileData[];
+}>;
 

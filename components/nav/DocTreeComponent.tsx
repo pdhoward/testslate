@@ -5,33 +5,7 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import { useMetaData, FileTreeItemSelected } from "@/context/useMetaData";
 import {CustomTreeItem} from '@/components/nav/doctreestyle/CustomTreeItem'
-import { DocumentType, ArtifactType } from '@/lib/types';
-
-// MetaFileData type for migratedb meta data collection
-export type MetaFileData = TreeViewBaseItem<{
-  _id: string;
-  id: string;
-  sha: string;
-  path: string;
-  name: string;
-  html_url: string | null;
-  documentType: DocumentType
-  label: string;
-  artifactType: ArtifactType
-  isDeleted: boolean;
-  createdOn: Date;
-  updatedOn: Date;
-  approvedOn: Date | null;
-  createdBy: string;
-  updatedBy: string;
-  approvedBy: string | null;
-  size: number | null;
-  extension: string | null;
-  description: string | null;
-  tags: string[];
-  isPinned: boolean;
-  children?: MetaFileData[];
-}>;
+import { MetaFileData } from '@/lib/types';
 
 
 type FileType = 'image' | 'pdf' | 'doc' | 'video' | 'folder' | 'pinned' | 'trash';
@@ -85,7 +59,7 @@ export default function FileExplorer() {
           itemId: itemId,
           itemLabel: foundSelectedItem.label,           
           itemDocumentType: foundSelectedItem.documentType,
-          itemArtifactType: foundSelectedItem.artifactType
+          itemArtifactType: foundSelectedItem.artifactType,         
 
         };
         // file detected so notify context

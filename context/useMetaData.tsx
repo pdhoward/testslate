@@ -1,6 +1,6 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback, FunctionComponent, ReactNode } from 'react';
-import { MetaFileData } from '@/components/nav/DocTreeComponent';
+import { MetaFileData } from '@/lib/types';
 import { ArtifactType } from '@/lib/types';
 
 const folderTemplates: { name: string; collection: string; db: string; artifactType: ArtifactType }[] = [
@@ -28,6 +28,8 @@ const createMockMetaFileData = (folder: string): MetaFileData[] => {
       id: `${folder}/file-1`,
       sha: 'abc123',
       path: `${folder}/file-1`,
+      org: 'aws',
+      application: 'awscarddemo',
       name: `File 1 in ${folder}`,
       html_url: null,
       documentType: 'file',
@@ -44,6 +46,8 @@ const createMockMetaFileData = (folder: string): MetaFileData[] => {
       extension: 'txt',
       description: `This is a mock file in ${folder}`,
       tags: ['mock'],
+      usedInProcess: [],
+      inScope: true,
       isPinned: false,
       children: [],
     },
@@ -52,6 +56,8 @@ const createMockMetaFileData = (folder: string): MetaFileData[] => {
       id: `${folder}/file-2`,
       sha: 'def456',
       path: `${folder}/file-2`,
+      org: 'aws',
+      application: 'awscarddemo',
       name: `File 2 in ${folder}`,
       html_url: null,
       documentType: 'file',
@@ -68,6 +74,8 @@ const createMockMetaFileData = (folder: string): MetaFileData[] => {
       extension: 'pdf',
       description: `This is another mock file in ${folder}`,
       tags: ['mock'],
+      usedInProcess: [],
+      inScope: true,
       isPinned: false,
       children: [],
     },
@@ -262,8 +270,10 @@ export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ chi
           let rootFolders: MetaFileData[] = folderTemplates.map(folder => ({
             _id: `${folder.name}-root`,
             id: `${folder.name}`,
-            sha: '', // Placeholder value, since root folders likely don’t have a sha
+            sha: '', // Placeholder value
             path: `${folder.name}`, // Root path for this folder
+            org: 'aws', // the account owning organization
+            application: 'awscarddemo', // name of the application associated with repo
             name: folder.name, // Folder name
             html_url: null, // No HTML URL for root folders
             documentType: 'folder', // Mark as a folder
@@ -280,6 +290,8 @@ export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ chi
             extension: null, // No extension for folders
             description: `Root folder for ${folder.name}`,
             tags: [],
+            usedInProcess: [],
+            inScope: true,
             isPinned: false,
             children: [], // Initialize as empty; will be populated by child files/folders
           }));
