@@ -11,7 +11,7 @@ export async function POST(req: Request) {
 
   try {
     // Parse the request body to get repoDetails
-    const { dbName, collection } = await req.json();   
+    const { dbName, collection } = await req.json();    
 
     if (!dbName || !collection) {
       return NextResponse.json({ error: 'Invalid database details' });
@@ -19,10 +19,10 @@ export async function POST(req: Request) {
 
     // Establish a MongoDB connection
     const db = await getMongoConnection(uri, MIGRATEDB);
-    const metaCollection = db.collection(collection);
+    const artifactCollection = db.collection(collection);
 
     // Fetch all documents from the meta collection (you can add filters if needed)
-    const metaDocs = await metaCollection.find({}).toArray();
+    const metaDocs = await artifactCollection.find({}).toArray();
 
     // Return the documents as a JSON response
     return NextResponse.json(metaDocs);

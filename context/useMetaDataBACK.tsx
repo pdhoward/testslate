@@ -86,6 +86,7 @@ const createMockMetaFileData = (folder: string): MetaFileData[] => {
 };
 
 
+
 interface MetaDataProviderProps {
   children: ReactNode;
 }
@@ -110,6 +111,7 @@ type dbDetails = {
   connection?: string; 
 };
 
+// item in the FileTree selected by user
 export type FileTreeItemSelected = {
   itemIndex: string;
   itemName: string;
@@ -119,8 +121,10 @@ export type FileTreeItemSelected = {
   itemArtifactType: string;
 };
 
+// MetaDataContext with initial undefined value
 export const MetaDataContext = createContext<MetaDataContextType | undefined>(undefined);
 
+// Hook to use MetaDataContext
 export const useMetaData = (): MetaDataContextType => {
   const context = useContext(MetaDataContext);
   if (!context) {
@@ -128,13 +132,16 @@ export const useMetaData = (): MetaDataContextType => {
   }
   return context;
 };
+  
 
+// MetaDataProvider component
 export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ children }) => {
   const [metaData, setMetaData] = useState<MetaFileData[]>([]);
   const [dbDetails, setDbDetails] = useState<dbDetails>({
     db: 'migrate',
     collection: 'meta'    
   });
+
   const [fileTreeItemSelected, setFileTreeItemSelected] = useState<FileTreeItemSelected>({
     itemIndex: "",
     itemName: "",
@@ -143,6 +150,7 @@ export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ chi
     itemDocumentType: "",
     itemArtifactType: ""
   });
+
   const [error, setError] = useState<string | null>(null);
   const [isRightClicked, setIsRightClicked] = useState<boolean>(false);
   const [artifactItemSelected, setArtifactItemSelected] = useState<string>('');
@@ -172,81 +180,94 @@ export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ chi
     setError(null);
   }, []);
 
-  /////////////////////////////////////////////////////////
-  // Modified useEffect to handle live data for "rules" //
-  ////////////////////////////////////////////////////////
+  ////////////////////////////////////////////
+  // Fetch data from MongoDB via an API   ////
+  ////////////////////////////////////////////
   useEffect(() => {
     const fetchMetaData = async () => {
-      try {
-        let mergedData: MetaFileData[] = [];
-
-        // Fetch data for each folder template
-        for (const folder of folderTemplates) {
-          let folderData: MetaFileData[] = [];
-
-          if (folder.name === 'rules') {
-            // Fetch live data for "rules" and prepend path with "rules/"
-            const response = await fetch('/api/fetchartifacts', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                dbName: folder.db,
-                collection: folder.collection,
-              }),
-            });
-
-            if (!response.ok) {
-              throw new Error(`Failed to fetch: ${response.statusText}`);
-            }
-
-            folderData = await response.json();
-            folderData = folderData.map((item: any) => ({
-              ...item,
-              path: `rules/${item.path}`, // Prepend "rules/" to the path
-            }));
-
-          } else if (folder.name === 'repo') {
-            // Fetch live data for "repo"
-            const response = await fetch('/api/fetchmetadata', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                dbName: folder.db,
-                collection: folder.collection,
-              }),
-            });
-
-            if (!response.ok) {
-              throw new Error(`Failed to fetch: ${response.statusText}`);
-            }
-
-            folderData = await response.json();
-            folderData = folderData.map((item: MetaFileData) => ({
-              ...item,
-              path: `repo/${item.path}`, // Prepend "repo/" to the path
-            }));
-          } else {
-            // Generate mock data 
-            folderData = createMockMetaFileData(folder.name);
+        try {
+          const response = await fetch('/api/fetchmetadata', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              dbDetails, // Pass db + collection object as the body
+            }),
+          });
+      
+          if (!response.ok) {
+            throw new Error(`Failed to fetch: ${response.statusText}`);
           }
+      
+          let data = await response.json();
 
-          // Add root folder for this template
-          mergedData = [...mergedData, ...folderData];
-        }
+          /////////////////////////////////////////////
+          // Step 1: Modify each path with 'repo/'
+          /////////////////////////////////////////////
+          data = data.map((item: MetaFileData) => ({
+            ...item,
+            path: `repo/${item.path}`, // Prepend 'repo/' to the path
+          }));
 
-        ///////////////////////////////////////////////////////
-        //  Pass merged data to buildMetaTreeStructure      //
-       //////////////////////////////////////////////////////
+          /////////////////////////////////////////////
+          // Step 2: Create root folders for each template
+          /////////////////////////////////////////////
+          let rootFolders: MetaFileData[] = folderTemplates.map(folder => ({
+            _id: `${folder.name}-root`,
+            id: `${folder.name}`,
+            sha: '', // Placeholder value
+            path: `${folder.name}`, // Root path for this folder
+            org: 'aws', // the account owning organization
+            project: 'POC',
+            application: 'awscarddemo', // name of the application associated with repo
+            name: folder.name, // Folder name
+            html_url: null, // No HTML URL for root folders
+            documentType: 'folder', // Mark as a folder
+            label: folder.name, // Label for display
+            artifactType: folder.artifactType,
+            isDeleted: false,
+            createdOn: new Date(),
+            updatedOn: new Date(),
+            approvedOn: null,
+            createdBy: 'System',
+            updatedBy: 'System',
+            approvedBy: null,
+            size: null, // No size for the root folder
+            extension: null, // No extension for folders
+            description: `Root folder for ${folder.name}`,
+            tags: [],
+            usedInProcess: [],
+            inScope: true,
+            isPinned: false,
+            children: [], // Initialize as empty; will be populated by child files/folders
+          }));
 
-        const metaStructure = buildMetaTreeStructure(mergedData);
+          /////////////////////////////////////////////
+          // Step 3: Create mock data for all folders except repo
+          /////////////////////////////////////////////
+          let allFoldersData: MetaFileData[] = [];
 
-        /////////////////////////////////////////////
-        // Sort root folders by folderTemplates order
-        /////////////////////////////////////////////
+          folderTemplates.forEach(folder => {
+            if (folder.name !== 'repo') {
+              const mockData = createMockMetaFileData(folder.name);
+              allFoldersData = [...allFoldersData, ...mockData];
+            }
+          });
+
+          /////////////////////////////////////////////
+          // Step 4: Merge root folders, real data, and mock data
+          /////////////////////////////////////////////
+          const mergedData = [...rootFolders, ...data, ...allFoldersData];
+
+          ///////////////////////////////////////////////////////
+          // Step 5: Pass merged data to buildMetaTreeStructure//
+          //////////////////////////////////////////////////////
+          const metaStructure = buildMetaTreeStructure(mergedData);
+
+          /////////////////////////////////////////////
+          // Step 6: Sort root folders by folderTemplates order
+          /////////////////////////////////////////////
           const sortedMetaStructure = metaStructure.sort((a, b) => {
             // Find index of each root folder in folderTemplates
             const indexA = folderTemplates.findIndex(folder => folder.name === a.name);
@@ -255,16 +276,17 @@ export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ chi
             return indexA - indexB; // Sort by index order
           });         
 
-        updateItems(sortedMetaStructure);
-        clearError();
-
-      } catch (error: any) {
-        setError(`Error retrieving metadata: ${error.message}`);
-      }
+          updateItems(sortedMetaStructure);
+          clearError();
+        } catch (error: any) {
+          setError(`Error retrieving metadata: ${error.message}`);
+        }
     };
 
     fetchMetaData();
-  }, [updateItems, clearError]);
+}, [updateItems, clearError]);
+
+
 
   const contextValue: MetaDataContextType = {
     metaData,

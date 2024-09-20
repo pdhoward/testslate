@@ -1,15 +1,12 @@
 "use client";
-import React, { useMemo, useState, useCallback } from 'react';
-import { Editor, createEditor, Descendant, Text, Transforms } from 'slate';
+import React, { useCallback } from 'react';
 import { 
-  Slate,
-  useSlate,
-  Editable, 
-  withReact, 
+  Slate,  
+  Editable,   
   RenderElementProps, 
   RenderLeafProps 
 } from 'slate-react';
-import { withHistory } from 'slate-history';
+
 import Element from '@/components/ui/Element'
 import HoveringToolbar from '@/components/nav/HoveringToolbar';
 import Toolbar from '@/components/nav/Toolbar';

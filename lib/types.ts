@@ -118,6 +118,7 @@ export type MetaFileData = TreeViewBaseItem<{
   id: string;
   sha: string;
   org: string;
+  project: string;
   application: string;
   path: string;
   name: string;
