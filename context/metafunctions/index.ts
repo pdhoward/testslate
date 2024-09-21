@@ -1,61 +1,120 @@
-import { MetaFileData } from '@/lib/types';
+import { MetaFileData, DocFileData } from '@/lib/types';
 import { ArtifactType } from '@/lib/types';
 
 
 /////////////////////////////////////////////////////
 // Function to build the document tree structure  //
 ///////////////////////////////////////////////////
-export const buildMetaTreeStructure = (items: MetaFileData[]): MetaFileData[] => {
-    const root: MetaFileData[] = [];
-    const pathMap: Record<string, MetaFileData> = {};
-  
-    items.forEach((item) => {
-      const segments = item.path.split('/');
-      const name = segments.pop() || "";
-      const path = segments.join('/');
-  
-      // Create a node with all the properties from MetaFileData
-      const node: MetaFileData = {
-        ...item, // Pass through all the data from MetaFileData
-        id: item.path, // Set id to item.path
-        name: name,
-        children: [], // Initialize children array
-      };
-  
-      if (item.documentType === 'tree' || item.documentType === 'folder') {
-        node.children = [];
-      }
-  
-      if (path === '') {
-        root.push(node); // Add to root if no parent path
-      } else {
-        const parent = pathMap[path];
-        if (parent) {
-          parent.children = parent.children || [];
-          parent.children.push(node); // Add the node to its parent
-        }
-      }
-  
-      pathMap[item.path] = node; // Add node to pathMap
-    });
-  
-    const sortNodes = (nodes: MetaFileData[]): MetaFileData[] => {
-      nodes.forEach((node) => {
-        if (node.children && node.children.length > 0) {
-          node.children = sortNodes(node.children); // Recursively sort children
-        }
-      });
-  
-      return nodes.sort((a, b) => {
-        // Folders should be sorted before files
-        if (a.documentType === 'tree' && b.documentType !== 'tree') return -1;
-        if (a.documentType !== 'tree' && b.documentType === 'tree') return 1;
-  
-        // Sort alphabetically if both are the same type
-        return a.name.localeCompare(b.name);
-      });
+
+
+export const buildMetaTreeStructure = (items: DocFileData[]): DocFileData[] => {
+  const root: DocFileData[] = [];
+  const pathMap: Record<string, DocFileData> = {};
+
+  items.forEach((item) => {
+    const segments = item.path.split('/');
+    const name = segments.pop() || "";
+    const path = segments.join('/');
+
+    // Create a node for each item
+    const node: DocFileData = {
+      ...item,
+      id: item.path,
+      name: name,
+      children: [],
     };
-  
-    return sortNodes(root); // Return the sorted tree structure
+
+    // Check the artifactType to determine how to handle different data types
+    switch (item.artifactType) {
+      case 'github': {
+        // Handle GitHub artifacts: tree, folder, blob, etc.
+        if (['tree', 'folder'].includes(item.documentType)) {
+          node.children = [];
+        }
+        break;
+      }
+
+      case 'rules':
+      case 'data':
+      case 'tests': {
+        // Handle rules, data, tests, or any text-based artifacts
+        // We treat the document type "text" as file with nested folders
+        const parentPath = segments.join('/');
+
+        // If no parent path, push to root
+        if (path === '') {
+          root.push(node);
+        } else {
+          // If parent doesn't exist, create a placeholder folder structure
+          if (!pathMap[parentPath]) {
+            const parentSegments = parentPath.split('/');
+            parentSegments.reduce((acc, folderName, index) => {
+              const currentPath = parentSegments.slice(0, index + 1).join('/');
+              if (!pathMap[currentPath]) {
+                const parentNode: DocFileData = {
+                  _id: '', // Assign an empty _id or generate a unique value if necessary
+                  id: currentPath,
+                  org: '', // Placeholder for organizational information
+                  project: '', // Placeholder for project name
+                  application: '', // Placeholder for application name
+                  name: folderName,
+                  path: currentPath,
+                  label: 'Folder', // Set a default label like 'Folder'
+                  documentType: 'folder',
+                  artifactType: item.artifactType, // Inherit artifactType from the item
+                  children: [],
+                };
+                pathMap[currentPath] = parentNode;
+            
+                const grandParentPath = parentSegments.slice(0, index).join('/');
+                if (grandParentPath === '') {
+                  root.push(parentNode); // Root-level folder
+                } else if (pathMap[grandParentPath]) {
+                  // Ensure the grandparent exists before pushing
+                  pathMap[grandParentPath].children = pathMap[grandParentPath].children || [];
+                  pathMap[grandParentPath].children.push(parentNode);
+                }
+              }
+              return pathMap[currentPath];
+            }, {});
+          }
+
+          // Add the current item to its parent folder
+          const parent = pathMap[parentPath];
+          parent.children = parent.children || [];
+          parent.children.push(node);
+        }
+        break;
+      }
+
+      default: {
+        // Default handling for other artifact types, if needed
+        // We can expand this in the future for new types
+        break;
+      }
+    }
+
+    // Add the node to the pathMap
+    pathMap[item.path] = node;
+  });
+
+  // Sorting function
+  const sortNodes = (nodes: DocFileData[]): DocFileData[] => {
+    nodes.forEach((node) => {
+      if (node.children && node.children.length > 0) {
+        node.children = sortNodes(node.children); // Recursively sort children
+      }
+    });
+
+    return nodes.sort((a, b) => {
+      // Folders should be sorted before files
+      if (a.documentType === 'tree' && b.documentType !== 'tree') return -1;
+      if (a.documentType !== 'tree' && b.documentType === 'tree') return 1;
+
+      // Sort alphabetically if both are the same type
+      return a.name.localeCompare(b.name);
+    });
   };
-  
+
+  return sortNodes(root); // Return the sorted tree structure
+};

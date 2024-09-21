@@ -5,16 +5,7 @@ import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import { useMetaData, FileTreeItemSelected } from "@/context/useMetaData";
 import {CustomTreeItem} from '@/components/nav/doctreestyle/CustomTreeItem'
-import { MetaFileData } from '@/lib/types';
-
-
-type FileType = 'image' | 'pdf' | 'doc' | 'video' | 'folder' | 'pinned' | 'trash';
-
-type ExtendedTreeItemProps = {
-  fileType?: FileType;
-  id: string;
-  label: string;
-}; 
+import { MetaFileData, DocFileData } from '@/lib/types';
 
 declare module 'react' {
   interface CSSProperties {
@@ -27,7 +18,7 @@ export default function FileExplorer() {
   const { metaData, updateFileTreeItemSelected } = useMetaData(); 
   const [selectedItem, setSelectedItem] = useState<string>('');
 
-  const findItemById = (items: MetaFileData[], id: string): MetaFileData | null => {
+  const findItemById = (items: DocFileData[], id: string): DocFileData | null => {
     for (const item of items) {
       if (item.id === id) {
         return item;
@@ -54,7 +45,11 @@ export default function FileExplorer() {
         //setSelectedItemObj(selectedItem);    
        
         const fileTreeItemSelected: FileTreeItemSelected = {
-          itemIndex: foundSelectedItem.sha,
+          item_id: foundSelectedItem._id, 
+          itemOrg: foundSelectedItem.org,
+          itemProject: foundSelectedItem.project,
+          itemApplication: foundSelectedItem.application,
+          itemPath: foundSelectedItem.path,
           itemName: foundSelectedItem.name,
           itemId: itemId,
           itemLabel: foundSelectedItem.label,           
@@ -66,17 +61,17 @@ export default function FileExplorer() {
         updateFileTreeItemSelected(fileTreeItemSelected);
         
         // set selected item SHA to pass to mui Tree
-        if (foundSelectedItem.sha) {
-          setSelectedItem(foundSelectedItem.sha);
+        if (foundSelectedItem._id) {
+          setSelectedItem(foundSelectedItem._id);
         }
       }
     }
   };
  
 
-  const getItemId = (item: MetaFileData) => item._id
-  const getItemlabel = (item: MetaFileData) => item.name;
-  const isItemDisabled = (item: MetaFileData) => !!item.isDeleted;
+  const getItemId = (item: DocFileData) => item._id
+  const getItemlabel = (item: DocFileData) => item.name;
+  const isItemDisabled = (item: DocFileData) => !!item.isDeleted;
   return (
     <Stack spacing={2}>    
       <Box sx={{ 
@@ -86,7 +81,7 @@ export default function FileExplorer() {
         }}
       >
         <RichTreeView
-          items={metaData as MetaFileData[]} 
+          items={metaData as DocFileData[]} 
           selectedItems={selectedItem}
           onSelectedItemsChange={handleSelectedItemsChange}
           getItemId={getItemId} 

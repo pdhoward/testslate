@@ -1,11 +1,11 @@
 "use client";
 import { createContext, useContext, useState, useEffect, useCallback, FunctionComponent, ReactNode } from 'react';
-import { MetaFileData } from '@/lib/types';
+import { MetaFileData, DocFileData } from '@/lib/types';
 import { ArtifactType } from '@/lib/types';
 import { buildMetaTreeStructure } from './metafunctions';
 
 const folderTemplates: { name: string; collection: string; db: string; artifactType: ArtifactType }[] = [
-  { name: "repo", collection: "meta", db: "migrate", artifactType: "repo" },
+  { name: "repo", collection: "meta", db: "migrate", artifactType: "github" },
   { name: "dashboard", collection: "dashboards", db: "migrate", artifactType: "charts" },
   { name: "business process", collection: "process", db: "migrate", artifactType: "process" },
   { name: "insights", collection: "insights", db: "migrate", artifactType: "insights" },
@@ -91,7 +91,7 @@ interface MetaDataProviderProps {
 }
 
 type MetaDataContextType = {
-  metaData: MetaFileData[];
+  metaData: DocFileData[];
   dbDetails: dbDetails;
   fileTreeItemSelected: FileTreeItemSelected;
   artifactItemSelected: string;
@@ -110,8 +110,30 @@ type dbDetails = {
   connection?: string; 
 };
 
+/*
+export type DocFileData = TreeViewBaseItem<{
+  _id: string;
+  id: string;  
+  org: string;
+  project: string;
+  application: string;
+  path: string;
+  name: string;
+  label: string;
+  documentType: string;
+  artifactType: string;
+} & Record<string, unknown>>;
+
+
+
+*/
+
 export type FileTreeItemSelected = {
-  itemIndex: string;
+  item_id: string; // mongodb _id 
+  itemOrg: string;
+  itemProject: string;
+  itemApplication: string;
+  itemPath: string;    
   itemName: string;
   itemId: string;
   itemLabel: string;
@@ -130,24 +152,28 @@ export const useMetaData = (): MetaDataContextType => {
 };
 
 export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ children }) => {
-  const [metaData, setMetaData] = useState<MetaFileData[]>([]);
+  const [metaData, setMetaData] = useState<DocFileData[]>([]);
   const [dbDetails, setDbDetails] = useState<dbDetails>({
     db: 'migrate',
     collection: 'meta'    
   });
   const [fileTreeItemSelected, setFileTreeItemSelected] = useState<FileTreeItemSelected>({
-    itemIndex: "",
+    item_id: "", 
+    itemOrg: "",
+    itemProject: "",
+    itemApplication: "",
+    itemPath: "",    
     itemName: "",
     itemId: "",
     itemLabel: "",
     itemDocumentType: "",
-    itemArtifactType: ""
+    itemArtifactType:"",
   });
   const [error, setError] = useState<string | null>(null);
   const [isRightClicked, setIsRightClicked] = useState<boolean>(false);
   const [artifactItemSelected, setArtifactItemSelected] = useState<string>('');
 
-  const updateItems = useCallback((items: MetaFileData[]) => {
+  const updateItems = useCallback((items: DocFileData[]) => {
     setMetaData(items);
   }, []);
 
@@ -172,99 +198,99 @@ export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ chi
     setError(null);
   }, []);
 
-  /////////////////////////////////////////////////////////
-  // Modified useEffect to handle live data for "rules" //
+  //////////////////////////////////////////////////////////
+  // useEffect to map through folder config & fetch data //
   ////////////////////////////////////////////////////////
   useEffect(() => {
     const fetchMetaData = async () => {
       try {
-        let mergedData: MetaFileData[] = [];
-
-        // Fetch data for each folder template
+        let mergedData: DocFileData[] = [];
+  
         for (const folder of folderTemplates) {
-          let folderData: MetaFileData[] = [];
-
-          if (folder.name === 'rules') {
-            // Fetch live data for "rules" and prepend path with "rules/"
-            const response = await fetch('/api/fetchartifacts', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                dbName: folder.db,
-                collection: folder.collection,
-              }),
-            });
-
-            if (!response.ok) {
-              throw new Error(`Failed to fetch: ${response.statusText}`);
+          let folderData: DocFileData[] = [];
+  
+          switch (folder.name) {
+            case 'rules': {
+              const response = await fetch('/api/fetchartifacts', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  dbName: folder.db,
+                  collection: folder.collection,
+                }),
+              });
+  
+              if (!response.ok) {
+                throw new Error(`Failed to fetch: ${response.statusText}`);
+              }
+  
+              let stageFolderData = await response.json();
+              folderData = stageFolderData.map((item: any) => ({
+                ...item,
+                path: `rules/${item.path}`, // Prepend "rules/" to the path
+              }));
+              break;
             }
-
-            folderData = await response.json();
-            folderData = folderData.map((item: any) => ({
-              ...item,
-              path: `rules/${item.path}`, // Prepend "rules/" to the path
-            }));
-
-          } else if (folder.name === 'repo') {
-            // Fetch live data for "repo"
-            const response = await fetch('/api/fetchmetadata', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                dbName: folder.db,
-                collection: folder.collection,
-              }),
-            });
-
-            if (!response.ok) {
-              throw new Error(`Failed to fetch: ${response.statusText}`);
+            case 'repo': {
+              const response = await fetch('/api/fetchmetadata', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  dbName: folder.db,
+                  collection: folder.collection,
+                }),
+              });
+  
+              if (!response.ok) {
+                throw new Error(`Failed to fetch: ${response.statusText}`);
+              }
+  
+              folderData = await response.json();
+              folderData = folderData.map((item: DocFileData) => ({
+                ...item,
+                path: `repo/${item.path}`, // Prepend "repo/" to the path
+              }));
+              break;
             }
-
-            folderData = await response.json();
-            folderData = folderData.map((item: MetaFileData) => ({
-              ...item,
-              path: `repo/${item.path}`, // Prepend "repo/" to the path
-            }));
-          } else {
-            // Generate mock data 
-            folderData = createMockMetaFileData(folder.name);
+            default: {
+              // Generate mock data for other folders
+              folderData = createMockMetaFileData(folder.name);
+              break;
+            }
           }
-
+  
           // Add root folder for this template
           mergedData = [...mergedData, ...folderData];
         }
-
-        ///////////////////////////////////////////////////////
-        //  Pass merged data to buildMetaTreeStructure      //
-       //////////////////////////////////////////////////////
-
+        console.log(`-------------debug file tree-------------`)
+        console.log(mergedData)
+  
         const metaStructure = buildMetaTreeStructure(mergedData);
 
-        /////////////////////////////////////////////
+        console.log(metaStructure)
+  
         // Sort root folders by folderTemplates order
-        /////////////////////////////////////////////
-          const sortedMetaStructure = metaStructure.sort((a, b) => {
-            // Find index of each root folder in folderTemplates
-            const indexA = folderTemplates.findIndex(folder => folder.name === a.name);
-            const indexB = folderTemplates.findIndex(folder => folder.name === b.name);
-
-            return indexA - indexB; // Sort by index order
-          });         
-
+        const sortedMetaStructure = metaStructure.sort((a, b) => {
+          const indexA = folderTemplates.findIndex(folder => folder.name === a.name);
+          const indexB = folderTemplates.findIndex(folder => folder.name === b.name);
+          return indexA - indexB;
+        });
+        console.log(sortedMetaStructure)
         updateItems(sortedMetaStructure);
         clearError();
-
+  
       } catch (error: any) {
         setError(`Error retrieving metadata: ${error.message}`);
       }
     };
-
+  
     fetchMetaData();
   }, [updateItems, clearError]);
+  
 
   const contextValue: MetaDataContextType = {
     metaData,
