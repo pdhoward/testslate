@@ -247,19 +247,15 @@ export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ chi
           // Add root folder for this template
           mergedData = [...mergedData, ...folderData];
         }    
-        console.log(`-----------debug metastructure in useMetaData -------`) 
-        console.log(mergedData)   
-        const metaStructure = buildMetaTreeStructure(mergedData);  
        
-        console.log(metaStructure)
+        const metaStructure = buildMetaTreeStructure(mergedData);     
   
         // Sort root folders by folderTemplates order
         const sortedMetaStructure = metaStructure.sort((a, b) => {
           const indexA = folderTemplates.findIndex(folder => folder.name === a.name);
           const indexB = folderTemplates.findIndex(folder => folder.name === b.name);
           return indexA - indexB;
-        });
-        console.log(sortedMetaStructure)
+        });      
         updateItems(sortedMetaStructure);
         clearError();
   
