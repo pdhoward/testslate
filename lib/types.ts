@@ -143,8 +143,7 @@ export type MetaFileData = TreeViewBaseItem<{
   children?: MetaFileData[];
 }>;
 
-export type DocFileData = TreeViewBaseItem<{
-  _id: string;
+export type DocFileData = TreeViewBaseItem<{  
   id: string;  
   org: string;
   project: string;

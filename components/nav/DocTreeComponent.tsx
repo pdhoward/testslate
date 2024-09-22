@@ -41,11 +41,9 @@ export default function FileExplorer() {
     if (itemId) {
       const foundSelectedItem = findItemById(metaData, itemId);
       console.log(foundSelectedItem)
-      if (foundSelectedItem) {
-        //setSelectedItemObj(selectedItem);    
+      if (foundSelectedItem) {     
        
-        const fileTreeItemSelected: FileTreeItemSelected = {
-          item_id: foundSelectedItem._id, 
+        const fileTreeItemSelected: FileTreeItemSelected = {         
           itemOrg: foundSelectedItem.org,
           itemProject: foundSelectedItem.project,
           itemApplication: foundSelectedItem.application,
@@ -62,14 +60,14 @@ export default function FileExplorer() {
         
         // set selected item SHA to pass to mui Tree
         if (foundSelectedItem._id) {
-          setSelectedItem(foundSelectedItem._id);
+          setSelectedItem(foundSelectedItem.id);
         }
       }
     }
   };
  
 
-  const getItemId = (item: DocFileData) => item._id
+  const getItemId = (item: DocFileData) => item.id
   const getItemlabel = (item: DocFileData) => item.name;
   const isItemDisabled = (item: DocFileData) => !!item.isDeleted;
   return (

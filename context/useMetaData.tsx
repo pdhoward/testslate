@@ -128,14 +128,13 @@ export type DocFileData = TreeViewBaseItem<{
 
 */
 
-export type FileTreeItemSelected = {
-  item_id: string; // mongodb _id 
+export type FileTreeItemSelected = {  
   itemOrg: string;
   itemProject: string;
   itemApplication: string;
   itemPath: string;    
   itemName: string;
-  itemId: string;
+  itemId: string; // unique generated id - see metafunctions
   itemLabel: string;
   itemDocumentType: string;
   itemArtifactType: string;
@@ -158,7 +157,7 @@ export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ chi
     collection: 'meta'    
   });
   const [fileTreeItemSelected, setFileTreeItemSelected] = useState<FileTreeItemSelected>({
-    item_id: "", 
+    
     itemOrg: "",
     itemProject: "",
     itemApplication: "",

@@ -1,6 +1,6 @@
 import { MetaFileData, DocFileData } from '@/lib/types';
 import { ArtifactType } from '@/lib/types';
-
+import { v4 as uuidv4 } from 'uuid';
 
 /////////////////////////////////////////////////////
 // Function to build the document tree structure  //
@@ -19,7 +19,7 @@ export const buildMetaTreeStructure = (items: DocFileData[]): DocFileData[] => {
     // Create a node for each item
     const node: DocFileData = {
       ...item,
-      id: item.path,
+      id: uuidv4(), // create a unique id for MUI Filetree processing
       name: name,
       children: [],
     };
@@ -51,9 +51,8 @@ export const buildMetaTreeStructure = (items: DocFileData[]): DocFileData[] => {
             parentSegments.reduce((acc, folderName, index) => {
               const currentPath = parentSegments.slice(0, index + 1).join('/');
               if (!pathMap[currentPath]) {
-                const parentNode: DocFileData = {
-                  _id: '', // Assign an empty _id or generate a unique value if necessary
-                  id: currentPath,
+                const parentNode: DocFileData = {                
+                  id: uuidv4(),   // Unique ID for the node
                   org: '', // Placeholder for organizational information
                   project: '', // Placeholder for project name
                   application: '', // Placeholder for application name
