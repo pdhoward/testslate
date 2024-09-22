@@ -33,43 +33,6 @@ export const buildMetaTreeStructure = (items: DocFileData[]): DocFileData[] => {
     switch (item.artifactType) {
       case 'github': {
         // Handle GitHub artifacts: tree, folder, blob, etc.
-
-        // We need to ensure the parent folder (like 'repo') is created for GitHub artifacts
-        if (path !== '') {
-          if (!pathMap[path]) {
-            // If parent folder doesn't exist, create it
-            const parentSegments = path.split('/');
-            parentSegments.reduce((acc, folderName, index) => {
-              const currentPath = parentSegments.slice(0, index + 1).join('/');
-              if (!pathMap[currentPath]) {
-                const parentNode: DocFileData = {
-                  id: uuidv4(),
-                  org: item.org,
-                  project: item.project,
-                  application: item.application,
-                  name: folderName,
-                  path: currentPath,
-                  label: 'Folder', // Default to folder label
-                  documentType: 'folder',
-                  artifactType: item.artifactType,
-                  children: [],
-                };
-                pathMap[currentPath] = parentNode;
-
-                const grandParentPath = parentSegments.slice(0, index).join('/');
-                if (grandParentPath === '') {
-                  root.push(parentNode); // Root-level folder
-                } else if (pathMap[grandParentPath]) {
-                  pathMap[grandParentPath].children = pathMap[grandParentPath].children || [];
-                  pathMap[grandParentPath].children.push(parentNode);
-                }
-              }
-              return pathMap[currentPath];
-            }, {});
-          }
-        }
-
-        // Add the GitHub node to its parent or root if no parent
         if (path === '') {
           root.push(node); // Add to root if no parent path for GitHub artifact
         } else {
@@ -77,6 +40,8 @@ export const buildMetaTreeStructure = (items: DocFileData[]): DocFileData[] => {
           if (parent) {
             parent.children = parent.children || [];
             parent.children.push(node); // Add the GitHub node to its parent
+          } else {
+            root.push(node); // If no parent exists, push to root
           }
         }
         break;
@@ -117,6 +82,7 @@ export const buildMetaTreeStructure = (items: DocFileData[]): DocFileData[] => {
                 if (grandParentPath === '') {
                   root.push(parentNode); // Root-level folder
                 } else if (pathMap[grandParentPath]) {
+                  // Ensure the grandparent exists before pushing
                   pathMap[grandParentPath].children = pathMap[grandParentPath].children || [];
                   pathMap[grandParentPath].children.push(parentNode);
                 }
@@ -145,8 +111,12 @@ export const buildMetaTreeStructure = (items: DocFileData[]): DocFileData[] => {
     } else {
       // Handle the case where the path already exists (append to the existing node)
       const existingNode = pathMap[item.path];
+
+      // Ensure that existingNode.children is initialized as an array
       existingNode.children = existingNode.children || [];
-      existingNode.children.push(...(node.children || [])); // Merge children if necessary
+
+      // Merge children if necessary
+      existingNode.children.push(...(node.children || []));  // Spread only if node.children is defined
     }
   });
 

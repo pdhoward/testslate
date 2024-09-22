@@ -22,7 +22,7 @@ const folderTemplates: { name: string; collection: string; db: string; artifactT
 
 
 // MetaFileData mock template for generating mock data
-const createMockMetaFileData = (folder: string): MetaFileData[] => {
+const createMockMetaFileData = (folder: string, artifact: ArtifactType): MetaFileData[] => {
   return [
     {
       _id: `${folder}-file-1`,
@@ -36,7 +36,7 @@ const createMockMetaFileData = (folder: string): MetaFileData[] => {
       html_url: null,
       documentType: 'file',
       label: `File 1`,
-      artifactType: 'meta',
+      artifactType: artifact,
       isDeleted: false,
       createdOn: new Date(),
       updatedOn: new Date(),
@@ -65,7 +65,7 @@ const createMockMetaFileData = (folder: string): MetaFileData[] => {
       html_url: null,
       documentType: 'file',
       label: `File 2`,
-      artifactType: 'meta',
+      artifactType: artifact,
       isDeleted: false,
       createdOn: new Date(),
       updatedOn: new Date(),
@@ -109,24 +109,6 @@ type dbDetails = {
   collection: string;
   connection?: string; 
 };
-
-/*
-export type DocFileData = TreeViewBaseItem<{
-  _id: string;
-  id: string;  
-  org: string;
-  project: string;
-  application: string;
-  path: string;
-  name: string;
-  label: string;
-  documentType: string;
-  artifactType: string;
-} & Record<string, unknown>>;
-
-
-
-*/
 
 export type FileTreeItemSelected = {  
   itemOrg: string;
@@ -257,19 +239,18 @@ export const MetaDataProvider: FunctionComponent<MetaDataProviderProps> = ({ chi
             }
             default: {
               // Generate mock data for other folders
-              folderData = createMockMetaFileData(folder.name);
+              folderData = createMockMetaFileData(folder.name, folder.artifactType);
               break;
             }
           }
   
           // Add root folder for this template
           mergedData = [...mergedData, ...folderData];
-        }
-        console.log(`-------------debug file tree-------------`)
-        console.log(mergedData)
-  
-        const metaStructure = buildMetaTreeStructure(mergedData);
-
+        }    
+        console.log(`-----------debug metastructure in useMetaData -------`) 
+        console.log(mergedData)   
+        const metaStructure = buildMetaTreeStructure(mergedData);  
+       
         console.log(metaStructure)
   
         // Sort root folders by folderTemplates order

@@ -20,7 +20,7 @@ export default function HomePageComponent({
   const { isRightClicked, fileTreeItemSelected } = useMetaData();
   const router = useRouter(); // Initialize the router
 
-  console.log(`----in homepage component -----`)
+  console.log(`----in homepage component - FILETREE ITEM SELECTED -----`)
   console.log(isRightClicked, fileTreeItemSelected)
 
   useEffect(() => {

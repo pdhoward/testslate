@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
-import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import { useMetaData, FileTreeItemSelected } from "@/context/useMetaData";
 import {CustomTreeItem} from '@/components/nav/doctreestyle/CustomTreeItem'
-import { MetaFileData, DocFileData } from '@/lib/types';
+import { DocFileData } from '@/lib/types';
 
 declare module 'react' {
   interface CSSProperties {
@@ -34,10 +33,7 @@ export default function FileExplorer() {
   };
 
   const handleSelectedItemsChange = (event: React.SyntheticEvent, itemId: string | null) => {
-
-    console.log(`------inside of doctreecomponent -----`)
-    console.log(itemId)
-    console.log(metaData)
+   
     if (itemId) {
       const foundSelectedItem = findItemById(metaData, itemId);
       console.log(foundSelectedItem)
@@ -64,8 +60,7 @@ export default function FileExplorer() {
         }
       }
     }
-  };
- 
+  }; 
 
   const getItemId = (item: DocFileData) => item.id
   const getItemlabel = (item: DocFileData) => item.name;
