@@ -155,4 +155,30 @@ export type DocFileData = TreeViewBaseItem<{
   artifactType: string;
 } & Record<string, unknown>>;
 
+export type RuleFileData = {  
+  id: string;  
+  org: string;
+  project: string;
+  application: string;
+  path: string;
+  name: string;
+  label: string;
+  documentType: string;
+  artifactType: string;
+  createdOn: string;
+  updatedOn: string;
+  approvedOn: string | null;
+  createdBy: string;
+  updatedBy: string;
+  approvedBy: string | null;
+  description: string;
+  source: string;
+  isDeleted: boolean;
+  isPinned: boolean;
+  sequence: string;
+  tags: string[];
+  element: string;  // rule or nonrule
+  children?: RuleFileData[];
+} & Record<string, unknown>;
+
 

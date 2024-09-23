@@ -6,10 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 ///////////////////////////////////////////////////
 export const buildMetaTreeStructure = (items: DocFileData[]): DocFileData[] => {
   const root: DocFileData[] = [];
-  const pathMap: Record<string, DocFileData> = {};
-
-  console.log(`-----inside of build tree structure -----`);
-  console.log(items);
+  const pathMap: Record<string, DocFileData> = {};  
 
   items.forEach((item) => {
     const segments = item.path.split('/');

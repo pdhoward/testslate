@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 import { useTreeData, FileTreeItemSelected } from "@/context/useTreeData";
-import {CustomTreeItem} from '@/components/nav/filetreestyle/CustomTreeItem'
+import {CustomTreeItem} from '@/components/trees/filetreestyle/CustomTreeItem'
 
 //  STRUCTURE OF FILETREEITEMSELECTED FROM CONTEXT
 // type FileTreeItemSelected = {

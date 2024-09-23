@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import { RichTreeView } from '@mui/x-tree-view/RichTreeView';
 import { useMetaData, FileTreeItemSelected } from "@/context/useMetaData";
-import {CustomTreeItem} from '@/components/nav/doctreestyle/CustomTreeItem'
+import {CustomTreeItem} from '@/components/trees/doctreestyle/CustomTreeItem'
 import { DocFileData } from '@/lib/types';
 
 declare module 'react' {

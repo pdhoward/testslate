@@ -43,10 +43,10 @@ import {
 import { TreeItem2Icon } from '@mui/x-tree-view/TreeItem2Icon';
 import { TreeItem2Provider } from '@mui/x-tree-view/TreeItem2Provider';
 import { TreeItem2DragAndDropOverlay } from '@mui/x-tree-view/TreeItem2DragAndDropOverlay';
-import {CustomLabel} from '@/components/nav/filetreestyle/CustomLabel'
-import {TransitionComponent} from '@/components/nav/filetreestyle/TransitionComponent'
-import {StyledTreeItemRoot} from '@/components/nav/filetreestyle/StyledTreeItemRoot'
-import {CustomTreeItemContent} from '@/components/nav/filetreestyle/CustomTreeItemContent'
+import {CustomLabel} from '@/components/trees/filetreestyle/CustomLabel'
+import {TransitionComponent} from '@/components/trees/filetreestyle/TransitionComponent'
+import {StyledTreeItemRoot} from '@/components/trees/filetreestyle/StyledTreeItemRoot'
+import {CustomTreeItemContent} from '@/components/trees/filetreestyle/CustomTreeItemContent'
 import { useTreeData } from '@/context/useTreeData';
 import { DocumentType, ArtifactType } from '@/lib/types';
 

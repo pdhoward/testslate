@@ -5,8 +5,8 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import SlateEditor from '@/components/SlateEditor';
 import CodeEditor from '@/components/code/CodeEditor'; 
 import Header from '@/components/nav/Header';
-import FileTreeComponent from '@/components/nav/FileTreeComponent';
-import DocTreeComponent from '@/components/nav/DocTreeComponent'
+import FileTreeComponent from '@/components/trees/FileTreeComponent';
+import DocTreeComponent from '@/components/trees/DocTreeComponent'
 import Tabs from '@/components/tabs/Tabs';
 import LLMMessagePanel from '@/components/LLMMessages';
 import { useMetaData } from '@/context/useMetaData';
@@ -25,7 +25,7 @@ export default function HomePageComponent({
 
   useEffect(() => {
     if (selectedTab === "ai") {
-      router.push("/explore"); // Navigate to /explore when 'ai' tab is selected
+      router.push("/rulecards"); // Navigate to /explore when 'ai' tab is selected
     }
   }, [selectedTab, router]);
   
