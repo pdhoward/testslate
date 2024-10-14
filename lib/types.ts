@@ -5,7 +5,7 @@ import { TreeViewBaseItem } from '@mui/x-tree-view/models';
 
 // types for the metafile definition
 export type DocumentType = 'image' | 'pdf' | 'text' | 'video' | 'folder' | 'file' | 'tree' | 'submodule' | 'symlink' | 'blob';
-export type ArtifactType = 'meta' | 'insights' | 'process' | 'stories' | 'notes' | 'charts' | 'tests' | 'code' | 'rules' | 'data' | 'prompts' | 'repo' | 'github' | 'discard' | 'pinned' | 'scope';
+export type ArtifactType = 'meta' | 'insights' | 'process' | 'stories' | 'notes' | 'charts' | 'tests' | 'code' | 'rules' | 'data' | 'prompts' | 'repo' | 'github' | 'discard' | 'pinned' | 'scope' |'rationale' | 'entity' | 'entitypgmmap' | 'entityprocessmap';
 
 // Alignment and List types for text blocks
 export type Align = 'left' | 'center' | 'right' | 'justify';
